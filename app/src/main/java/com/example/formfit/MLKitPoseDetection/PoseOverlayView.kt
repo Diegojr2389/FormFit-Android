@@ -11,6 +11,7 @@ import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
 import com.example.formfit.ui.components.feedback.providePlankFeedback
+import com.example.formfit.ui.components.feedback.providePreacherCurlFeedback
 import com.example.formfit.ui.components.feedback.provideSquatFeedback
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import com.google.mlkit.vision.pose.Pose
@@ -164,6 +165,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "conventional-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
             "barbell-curl" -> { return provideBarbellCurlFeedback(pose) }
             "plank" -> { return providePlankFeedback(pose) }
+            "preacher-curl" -> { return providePreacherCurlFeedback(pose) }
             else -> return ""
         }
     }

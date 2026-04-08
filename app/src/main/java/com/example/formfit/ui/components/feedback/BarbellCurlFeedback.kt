@@ -56,7 +56,7 @@ fun provideBarbellCurlFeedback(pose: Pose? = null): String {
                 }
 
                 // curl should reach about 60 degrees at the top of the rep
-                if (currentArmAngle < 60 + ANGLE_TOLERANCE) {
+                if (currentArmAngle <= 60 + ANGLE_TOLERANCE) {
                     isGoodBarbellCurlRep = true
                     return "Perfect"
                 }
