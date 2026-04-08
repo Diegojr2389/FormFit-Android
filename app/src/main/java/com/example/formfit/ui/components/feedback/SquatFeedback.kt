@@ -2,6 +2,7 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import com.example.formfit.utils.calculateAngle
+import com.example.formfit.utils.determineCloserLeg
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 
@@ -116,45 +117,4 @@ fun provideSquatFeedback(pose: Pose? = null): String{
     }
 
     return ""
-}
-
-// determines which leg is closer to the screen to provide better feedback
-// can provide better feedback on leg that has higher visibility
-private fun determineCloserLeg(pose: Pose) : String {
-    val leftHip =  pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
-    val leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)
-    val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
-
-    val rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)
-    val rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)
-    val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
-
-    // can't determine closer leg if landmarks on either leg are not visible
-    if (leftHip == null && leftKnee == null && leftAnkle == null &&
-        rightHip == null && rightKnee == null && rightAnkle == null) {
-        return "error"
-    }
-
-    // right leg is closer if any landmark on the left leg is null
-    if (leftHip == null || leftKnee == null || leftAnkle == null) return "right"
-
-    // left leg is closer if any landmark on the right leg is null
-    if (rightHip == null || rightKnee == null || rightAnkle == null) return "left"
-
-    // if z values of left leg landmarks are greater than the z values of the right leg landmarks,
-    // then the right leg is closer to the screen
-    if ((leftHip.position3D.z + leftKnee.position3D.z + leftKnee.position3D.z) >
-        (rightHip.position3D.z + rightKnee.position3D.z + rightAnkle.position3D.z)) {
-        return "right"
-    }
-
-    // if z values of left leg landmarks are less than the z values of the right leg landmarks,
-    // then the left leg is closer to the screen
-    if ((leftHip.position3D.z + leftKnee.position3D.z + leftKnee.position3D.z) <
-        (rightHip.position3D.z + rightKnee.position3D.z + rightAnkle.position3D.z)) {
-        return "left"
-    }
-
-    // if nothing has been returned, then an error has occurred, so we return "error"
-    return "error"
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
+import com.example.formfit.ui.components.feedback.providePlankFeedback
 import com.example.formfit.ui.components.feedback.provideSquatFeedback
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import com.google.mlkit.vision.pose.Pose
@@ -161,7 +162,8 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "squat" -> {return  provideSquatFeedback(pose) }
             "bench-press" -> { return provideBenchPressFeedback(pose) }
             "conventional-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
-            "barbell-curl" -> {return provideBarbellCurlFeedback(pose) }
+            "barbell-curl" -> { return provideBarbellCurlFeedback(pose) }
+            "plank" -> { return providePlankFeedback(pose) }
             else -> return ""
         }
     }

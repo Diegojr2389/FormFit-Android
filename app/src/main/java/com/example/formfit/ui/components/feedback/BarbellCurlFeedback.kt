@@ -4,6 +4,7 @@ import android.graphics.PointF
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import com.example.formfit.utils.calculateAngle
+import com.example.formfit.utils.determineCloserArm
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 
@@ -46,20 +47,32 @@ fun provideBarbellCurlFeedback(pose: Pose? = null): String {
             val currentArmAngle = calculateAngle(rightShoulderPoint, rightElbowPoint, rightWristPoint)
             val hShElAngle = calculateAngle(rightHipPoint, rightShoulderPoint, rightElbowPoint)
 
-            if (lowest_angle_barbell_curl > currentArmAngle) lowest_angle_barbell_curl = currentArmAngle
+            if (hShElAngle > (15 + ANGLE_TOLERANCE)) return "Elbow is too forward";
 
-            if (hShElAngle > (15 + ANGLE_TOLERANCE)) return "Elbow is too forward"
+            // going up
+            if (!going_down_barbell_curl) {
+                if (lowest_angle_barbell_curl > currentArmAngle) {
+                    lowest_angle_barbell_curl = currentArmAngle
+                }
 
-            // curl should reach about 60 degrees at the top of the rep
-            if (currentArmAngle < 60 + ANGLE_TOLERANCE) {
-                return "Perfect"
+                // curl should reach about 60 degrees at the top of the rep
+                if (currentArmAngle < 60 + ANGLE_TOLERANCE) {
+                    isGoodBarbellCurlRep = true
+                    return "Perfect"
+                }
+
+                if (currentArmAngle - lowest_angle_barbell_curl > 50) {
+                    going_down_barbell_curl = true
+                    if (!isGoodBarbellCurlRep) return "On next rep, curl the bar more until you hear perfect."
+                }
             }
-
-            // to reset lowest angle (going up)
-            if ((lowest_angle_barbell_curl > 60 + ANGLE_TOLERANCE) &&
-                (currentArmAngle - lowest_angle_barbell_curl) > 50) {
-                lowest_angle_barbell_curl = 360.0
-                return "On next rep, curl the bar more until you hear perfect."
+            else {
+                if (currentArmAngle > 150 - ANGLE_TOLERANCE) {
+                    lowest_angle_barbell_curl = currentArmAngle
+                    going_down_barbell_curl = false
+                    isGoodBarbellCurlRep = false
+                    return "Reset"
+                }
             }
         }
     }
@@ -111,50 +124,10 @@ fun provideBarbellCurlFeedback(pose: Pose? = null): String {
                     lowest_angle_barbell_curl = currentArmAngle
                     going_down_barbell_curl = false
                     isGoodBarbellCurlRep = false
-                    Log.d("Feedback", "RESET")
                     return "Reset"
                 }
             }
         }
     }
     return ""
-}
-
-private fun determineCloserArm(pose: Pose) : String {
-    val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
-    val leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
-    val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
-
-    val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
-    val rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
-    val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
-
-    // can't determine closer arm if landmarks on either arm are not visible
-    if (leftShoulder == null && leftElbow == null && leftWrist == null &&
-        rightShoulder == null && rightElbow == null && rightWrist == null) {
-        return "error"
-    }
-
-    // right arm is closer if any landmark on the left arm is null
-    if (leftShoulder == null || leftElbow == null || leftWrist == null) return "right"
-
-    // left arm is closer if any landmark on the right arm is null
-    if (rightShoulder == null || rightElbow == null || rightWrist == null) return "left"
-
-    // if z values of left arm landmarks are greater than the z values of the right arm landmarks,
-    // then the right arm is closer to the screen
-    if ((leftShoulder.position3D.z + leftElbow.position3D.z + leftWrist.position3D.z) >
-        (rightShoulder.position3D.z + rightElbow.position3D.z + rightWrist.position3D.z)) {
-        return "right"
-    }
-
-    // if z values of left arm landmarks are less than the z values of the right arm landmarks,
-    // then the left arm is closer to the screen
-    if ((leftShoulder.position3D.z + leftElbow.position3D.z + leftWrist.position3D.z) <
-        (rightShoulder.position3D.z + rightElbow.position3D.z + rightWrist.position3D.z)) {
-        return "left"
-    }
-
-    // if nothing has been returned, then an error has occurred, so we return "error"
-    return "error"
 }
