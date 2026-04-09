@@ -8,6 +8,7 @@ import android.graphics.PointF
 import android.view.View
 import androidx.compose.runtime.Composable
 import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
+import com.example.formfit.ui.components.feedback.provideBarbellOverheadPressFeedback
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
 import com.example.formfit.ui.components.feedback.provideGoodMorningFeedback
@@ -170,6 +171,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "preacher-curl" -> { return providePreacherCurlFeedback(pose) }
             "leg-extension" -> { return provideLegExtensionFeedback(pose) }
             "good-morning" -> { return provideGoodMorningFeedback(pose) }
+            "barbell-shoulder-overhead-press" -> { return provideBarbellOverheadPressFeedback(pose) }
             else -> return ""
         }
     }
