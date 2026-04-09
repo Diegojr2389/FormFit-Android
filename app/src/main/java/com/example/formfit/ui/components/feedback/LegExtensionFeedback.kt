@@ -100,6 +100,7 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
             is_going_down_leg_extension = false
             is_good_up_leg_extension = false
             highest_leg_angle_leg_extension = 0.0
+            lowest_leg_angle_leg_extension = 360.0
             return "Good. Full range of motion."
         }
 
@@ -107,6 +108,7 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
             is_going_down_leg_extension = false
             is_good_up_leg_extension = false
             highest_leg_angle_leg_extension = 0.0
+            lowest_leg_angle_leg_extension = 360.0
             return "On next rep, extend your legs higher."
         }
     }
