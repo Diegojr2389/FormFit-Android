@@ -10,9 +10,9 @@ import com.google.mlkit.vision.pose.PoseLandmark
 var has_determined_closer_arm_preacher_curl = false
 var closer_arm_preacher_curl = ""
 var lowest_arm_angle_preacher = 360.0
+var highest_arm_angle_preacher = 0.0
 var is_going_down_preacher = false
 var is_good_up_preacher = false
-var angle_check = 0.0
 fun providePreacherCurlFeedback(pose: Pose? = null): String {
     if (pose == null) return ""
 
@@ -56,7 +56,6 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
     val wristPoint = PointF(wrist.position.x, wrist.position.y)
 
     val armAngle = calculateAngle(shoulderPoint, elbowPoint, wristPoint)
-    Log.d("Feedback", "ANGLE: $armAngle")
 
     if (!is_going_down_preacher) {
         if (armAngle < lowest_arm_angle_preacher) {
@@ -66,16 +65,17 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
             is_good_up_preacher = true
             return "Perfect. Keep it controlled."
         }
+        // going down
         if (armAngle - lowest_arm_angle_preacher >= 40 + ANGLE_TOLERANCE) {
             is_going_down_preacher = true
             if (!is_good_up_preacher) return "On next rep, lift higher and squeeze at the top"
         }
     }
     else {
-        if (armAngle > angle_check) {
-            angle_check = armAngle
+        if (armAngle > highest_arm_angle_preacher) {
+            highest_arm_angle_preacher = armAngle
         }
-        // extended arms all the way down
+        // extended arms well
         if (armAngle > 160 - ANGLE_TOLERANCE) {
             is_going_down_preacher = false
             is_good_up_preacher = false
@@ -83,7 +83,7 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
             return "Good. Full range of motion."
         }
         // did not extend arms all the way down (is now going up)
-        if (angle_check - armAngle >= 30 + ANGLE_TOLERANCE) {
+        if (highest_arm_angle_preacher - armAngle >= 30 + ANGLE_TOLERANCE) {
             is_going_down_preacher = false
             is_good_up_preacher = false
             lowest_arm_angle_preacher = 360.0
