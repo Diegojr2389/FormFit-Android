@@ -133,3 +133,16 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
 
     return ""
 }
+
+fun resetBSOPVariables() {
+    has_determined_closer_side_SOP = false
+    closer_side_SOP = ""
+    is_going_down_SOP = false
+    highest_wrist_Y = 0.0f
+    highest_elbow_angle = 0.0
+    is_good_up_SOP = false
+    is_good_down_SOP = false
+    is_grip_good_SOP = false
+    x_offset_SOP = 0
+    Y_TOLERANCE = 15
+}

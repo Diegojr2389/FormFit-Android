@@ -16,6 +16,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.formfit.MLKitPoseDetection.ImageAnalyzer
 import com.example.formfit.MLKitPoseDetection.PoseOverlayView
+import com.example.formfit.ui.components.feedback.resetBSOPVariables
+import com.example.formfit.ui.components.feedback.resetLRVariables
 import com.example.formfit.ui.components.speech.SpeechToTextManager
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import java.util.concurrent.Executors
@@ -24,6 +26,10 @@ import java.util.concurrent.Executors
 @Composable
 @androidx.camera.core.ExperimentalGetImage
 fun CameraScreen(exerciseId: String?) {
+    when (exerciseId) {
+        "barbell-shoulder-overhead-press" -> resetBSOPVariables()
+        "lateral-raise" -> resetLRVariables()
+    }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
