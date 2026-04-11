@@ -12,6 +12,7 @@ import com.example.formfit.ui.components.feedback.provideBarbellOverheadPressFee
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
 import com.example.formfit.ui.components.feedback.provideGoodMorningFeedback
+import com.example.formfit.ui.components.feedback.provideHangingLegRaiseFeedback
 import com.example.formfit.ui.components.feedback.provideLateralRaiseFeedback
 import com.example.formfit.ui.components.feedback.provideLegExtensionFeedback
 import com.example.formfit.ui.components.feedback.providePlankFeedback
@@ -176,6 +177,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "barbell-shoulder-overhead-press" -> { return provideBarbellOverheadPressFeedback(pose) }
             "lateral-raise" -> { return provideLateralRaiseFeedback(pose) }
             "pullup" -> { return providePullupFeedback(pose) }
+            "hanging-leg-raise" -> { return provideHangingLegRaiseFeedback(pose) }
             else -> return ""
         }
     }
