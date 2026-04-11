@@ -11,7 +11,7 @@ var has_determined_closer_side_SOP = false
 var closer_side_SOP = ""
 var is_going_down_SOP = false
 var highest_wrist_Y = 0.0f
-var highest_elbow_angle = 0.0
+var highest_elbow_angle_SOP = 0.0
 var is_good_up_SOP = false
 var is_good_down_SOP = false
 var is_grip_good_SOP = false
@@ -90,8 +90,8 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
     // checks if bar is going low and high enough
     else {
         if (!is_going_down_SOP) {
-            if (elbowAngle > highest_elbow_angle) {
-                highest_elbow_angle = elbowAngle
+            if (elbowAngle > highest_elbow_angle_SOP) {
+                highest_elbow_angle_SOP = elbowAngle
             }
 
             // good rep at top
@@ -100,9 +100,9 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
                 return "Perfect. Arms extended all the way."
             }
 
-            if (highest_elbow_angle - elbowAngle >= 20 + ANGLE_TOLERANCE) {
+            if (highest_elbow_angle_SOP - elbowAngle >= 20 + ANGLE_TOLERANCE) {
                 is_going_down_SOP = true
-                highest_elbow_angle = 0.0
+                highest_elbow_angle_SOP = 0.0
                 if (!is_good_up_SOP) {
                     return "On next rep, extend your arms more"
                 }
@@ -139,7 +139,7 @@ fun resetBSOPVariables() {
     closer_side_SOP = ""
     is_going_down_SOP = false
     highest_wrist_Y = 0.0f
-    highest_elbow_angle = 0.0
+    highest_elbow_angle_SOP = 0.0
     is_good_up_SOP = false
     is_good_down_SOP = false
     is_grip_good_SOP = false

@@ -16,6 +16,7 @@ import com.example.formfit.ui.components.feedback.provideLateralRaiseFeedback
 import com.example.formfit.ui.components.feedback.provideLegExtensionFeedback
 import com.example.formfit.ui.components.feedback.providePlankFeedback
 import com.example.formfit.ui.components.feedback.providePreacherCurlFeedback
+import com.example.formfit.ui.components.feedback.providePullupFeedback
 import com.example.formfit.ui.components.feedback.provideSquatFeedback
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import com.google.mlkit.vision.pose.Pose
@@ -174,6 +175,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "good-morning" -> { return provideGoodMorningFeedback(pose) }
             "barbell-shoulder-overhead-press" -> { return provideBarbellOverheadPressFeedback(pose) }
             "lateral-raise" -> { return provideLateralRaiseFeedback(pose) }
+            "pullup" -> { return providePullupFeedback(pose) }
             else -> return ""
         }
     }
