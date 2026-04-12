@@ -137,3 +137,14 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
 
     return ""
 }
+
+fun resetCDLVariables() {
+    has_determined_closer_side_CDL = false
+    closer_side_CDL = ""
+    is_going_down_CDL = false
+    is_good_up_CDL = false
+    highest_hip_angle_CDL = 0.0
+    lowest_hip_angle_CDL = 360.0
+    is_bar_aligned_with_midfoot_CDL = false
+    X_TOLERANCE = 20
+}
