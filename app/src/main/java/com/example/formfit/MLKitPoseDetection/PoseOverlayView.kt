@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.view.View
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
 import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
 import com.example.formfit.ui.components.feedback.provideBarbellOverheadPressFeedback
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
@@ -20,6 +21,7 @@ import com.example.formfit.ui.components.feedback.providePreacherCurlFeedback
 import com.example.formfit.ui.components.feedback.providePullupFeedback
 import com.example.formfit.ui.components.feedback.provideSquatFeedback
 import com.example.formfit.ui.components.speech.TextToSpeechManager
+import com.example.formfit.ui.theme.PrimaryBlue
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import kotlin.math.max
@@ -71,7 +73,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
 
     // Paint object used to draw pose landmarks
     private val circlePaint = Paint().apply {
-        color = Color.RED
+        color = PrimaryBlue.toArgb()
         style = Paint.Style.FILL
         strokeWidth = 10f
         isAntiAlias = true
@@ -92,7 +94,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
         val landmarks = pose?.allPoseLandmarks ?: return
 
         landmarks.forEach { landmark ->
-            if (landmark.inFrameLikelihood < 0.9) return@forEach
+            if (landmark.inFrameLikelihood < 0.95) return@forEach
             val p = mapPoint(landmark.position.x, landmark.position.y)
             canvas.drawCircle(p.x, p.y, 8f, circlePaint)
         }
@@ -168,7 +170,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
         when (exerciseId) {
             "squat" -> {return  provideSquatFeedback(pose) }
             "bench-press" -> { return provideBenchPressFeedback(pose) }
-            "conventional-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
+            "conventional-barbell-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
             "barbell-curl" -> { return provideBarbellCurlFeedback(pose) }
             "plank" -> { return providePlankFeedback(pose) }
             "preacher-curl" -> { return providePreacherCurlFeedback(pose) }
