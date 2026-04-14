@@ -18,6 +18,7 @@ import com.example.formfit.MLKitPoseDetection.ImageAnalyzer
 import com.example.formfit.MLKitPoseDetection.PoseOverlayView
 import com.example.formfit.ui.components.feedback.resetBSOPVariables
 import com.example.formfit.ui.components.feedback.resetCDLVariables
+import com.example.formfit.ui.components.feedback.resetDipVariables
 import com.example.formfit.ui.components.feedback.resetHLRVariables
 import com.example.formfit.ui.components.feedback.resetLRVariables
 import com.example.formfit.ui.components.feedback.resetPullupVariables
@@ -39,6 +40,7 @@ fun CameraScreen(exerciseId: String?) {
         "conventional-barbell-deadlift" -> resetCDLVariables()
         "romanian-deadlift" -> resetRDLVariables()
         "upright-row" -> resetURVariables()
+        "dip" -> resetDipVariables()
     }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current

@@ -12,6 +12,7 @@ import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
 import com.example.formfit.ui.components.feedback.provideBarbellOverheadPressFeedback
 import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
+import com.example.formfit.ui.components.feedback.provideDipFeedback
 import com.example.formfit.ui.components.feedback.provideGoodMorningFeedback
 import com.example.formfit.ui.components.feedback.provideHangingLegRaiseFeedback
 import com.example.formfit.ui.components.feedback.provideLateralRaiseFeedback
@@ -184,6 +185,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "hanging-leg-raise" -> { return provideHangingLegRaiseFeedback(pose) }
             "romanian-deadlift" -> { return provideRomanianDeadliftFeedback(pose) }
             "upright-row" -> { return provideUprightRowFeedback(pose) }
+            "dip" -> { return provideDipFeedback(pose) }
             else -> return ""
         }
     }
