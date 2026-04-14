@@ -94,7 +94,7 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
     }
 
     if (is_bar_aligned_with_midfoot_RDL &&
-        wristPoint.x <= midFootX - X_TOLERANCE) {
+        wristPoint.x < midFootX - X_TOLERANCE) {
         is_bar_aligned_with_midfoot_RDL = false
         if (closer_side_RDL == "right") {
             return "Bar is too back"

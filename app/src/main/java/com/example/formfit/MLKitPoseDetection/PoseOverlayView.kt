@@ -21,6 +21,7 @@ import com.example.formfit.ui.components.feedback.providePreacherCurlFeedback
 import com.example.formfit.ui.components.feedback.providePullupFeedback
 import com.example.formfit.ui.components.feedback.provideRomanianDeadliftFeedback
 import com.example.formfit.ui.components.feedback.provideSquatFeedback
+import com.example.formfit.ui.components.feedback.provideUprightRowFeedback
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import com.example.formfit.ui.theme.PrimaryBlue
 import com.google.mlkit.vision.pose.Pose
@@ -182,6 +183,7 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             "pullup" -> { return providePullupFeedback(pose) }
             "hanging-leg-raise" -> { return provideHangingLegRaiseFeedback(pose) }
             "romanian-deadlift" -> { return provideRomanianDeadliftFeedback(pose) }
+            "upright-row" -> { return provideUprightRowFeedback(pose) }
             else -> return ""
         }
     }

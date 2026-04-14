@@ -43,8 +43,6 @@ fun provideSquatFeedback(pose: Pose? = null): String{
                 lowest_angle_squat = currentAngle
             }
 
-//            if (!squats_started) return ""
-
             // Medium/Deep squat is optimal
             if (!deep_squat_reached) {
                 // Medium/Deep squat is optimal

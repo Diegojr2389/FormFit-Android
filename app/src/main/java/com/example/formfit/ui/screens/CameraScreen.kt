@@ -22,6 +22,7 @@ import com.example.formfit.ui.components.feedback.resetHLRVariables
 import com.example.formfit.ui.components.feedback.resetLRVariables
 import com.example.formfit.ui.components.feedback.resetPullupVariables
 import com.example.formfit.ui.components.feedback.resetRDLVariables
+import com.example.formfit.ui.components.feedback.resetURVariables
 import com.example.formfit.ui.components.speech.SpeechToTextManager
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import java.util.concurrent.Executors
@@ -37,6 +38,7 @@ fun CameraScreen(exerciseId: String?) {
         "hanging-leg-raise" -> resetHLRVariables()
         "conventional-barbell-deadlift" -> resetCDLVariables()
         "romanian-deadlift" -> resetRDLVariables()
+        "upright-row" -> resetURVariables()
     }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
