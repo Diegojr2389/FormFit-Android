@@ -22,6 +22,7 @@ import com.example.formfit.ui.components.feedback.resetDipVariables
 import com.example.formfit.ui.components.feedback.resetHLRVariables
 import com.example.formfit.ui.components.feedback.resetLRVariables
 import com.example.formfit.ui.components.feedback.resetPullupVariables
+import com.example.formfit.ui.components.feedback.resetPushupVariables
 import com.example.formfit.ui.components.feedback.resetRDLVariables
 import com.example.formfit.ui.components.feedback.resetURVariables
 import com.example.formfit.ui.components.speech.SpeechToTextManager
@@ -41,6 +42,7 @@ fun CameraScreen(exerciseId: String?) {
         "romanian-deadlift" -> resetRDLVariables()
         "upright-row" -> resetURVariables()
         "dip" -> resetDipVariables()
+        "pushup" -> resetPushupVariables()
     }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
