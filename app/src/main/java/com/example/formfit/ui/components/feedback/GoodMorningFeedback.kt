@@ -123,3 +123,13 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
     }
     return ""
 }
+
+fun resetGMVariables() {
+    has_determined_closer_side_GM = false
+    closer_side_GM = ""
+    is_going_down_GM = true
+    lowest_hip_angle_GM = 360.0
+    highest_hip_angle_GM = 0.0
+    is_good_up_GM = false
+    is_good_down_GM = false
+}

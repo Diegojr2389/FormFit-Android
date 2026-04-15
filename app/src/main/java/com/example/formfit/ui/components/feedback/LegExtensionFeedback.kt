@@ -114,3 +114,12 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
     }
     return ""
 }
+
+fun resetLegExtensionVariables() {
+    has_determined_closer_side_leg_extension = false
+    closer_side_leg_extension = ""
+    is_going_down_leg_extension = false
+    highest_leg_angle_leg_extension = 0.0
+    lowest_leg_angle_leg_extension = 360.0
+    is_good_up_leg_extension = false
+}

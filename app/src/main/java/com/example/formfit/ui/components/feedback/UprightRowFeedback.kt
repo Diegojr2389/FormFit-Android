@@ -132,7 +132,7 @@ private fun generateFeedback(wrist: PoseLandmark, elbow: PoseLandmark, shoulder:
 
     return ""
 }
-fun resetURVariables() {
+fun resetUprightRowVariables() {
     has_determined_closer_side_UR = false
     closer_side_UR = ""
     is_going_down_UR = true

@@ -112,7 +112,7 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
     return ""
 }
 
-fun resetDRVariables() {
+fun resetDumbbellRowVariables() {
     has_determined_closer_arm_DR = false
     closer_arm_DR = ""
     is_going_down_DR = false

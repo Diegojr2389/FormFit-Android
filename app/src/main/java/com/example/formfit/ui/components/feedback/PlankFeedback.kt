@@ -121,3 +121,11 @@ fun providePlankFeedback(pose: Pose? = null): String {
     }
     return ""
 }
+
+fun resetPlankVariables() {
+    has_determined_closer_side_plank = false
+    closer_side_plank = ""
+    knee_feedback_triggered_plank = false
+    hip_feedback_triggered_plank = false
+    first_feedback_triggered = false
+}

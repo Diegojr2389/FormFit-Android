@@ -132,7 +132,7 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
     return ""
 }
 
-fun resetLRVariables() {
+fun resetLateralRaiseVariables() {
     has_determined_closer_arm_LR = false
     closer_arm_LR = ""
     is_going_down_LR = false

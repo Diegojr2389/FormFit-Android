@@ -92,3 +92,12 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
     }
     return ""
 }
+
+fun resetPreacherCurlVariables() {
+    has_determined_closer_arm_preacher_curl = false
+    closer_arm_preacher_curl = ""
+    lowest_arm_angle_preacher = 360.0
+    highest_arm_angle_preacher = 0.0
+    is_going_down_preacher = false
+    is_good_up_preacher = false
+}

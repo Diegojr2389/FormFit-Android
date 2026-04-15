@@ -17,16 +17,22 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.formfit.MLKitPoseDetection.ImageAnalyzer
 import com.example.formfit.MLKitPoseDetection.PoseOverlayView
 import com.example.formfit.ui.components.feedback.resetBSOPVariables
+import com.example.formfit.ui.components.feedback.resetBarbellCurlVariables
 import com.example.formfit.ui.components.feedback.resetCDLVariables
-import com.example.formfit.ui.components.feedback.resetDRVariables
 import com.example.formfit.ui.components.feedback.resetDipVariables
+import com.example.formfit.ui.components.feedback.resetDumbbellRowVariables
+import com.example.formfit.ui.components.feedback.resetGMVariables
 import com.example.formfit.ui.components.feedback.resetHLRVariables
-import com.example.formfit.ui.components.feedback.resetHTVariables
-import com.example.formfit.ui.components.feedback.resetLRVariables
+import com.example.formfit.ui.components.feedback.resetHipThrustVariables
+import com.example.formfit.ui.components.feedback.resetLateralRaiseVariables
+import com.example.formfit.ui.components.feedback.resetLegExtensionVariables
+import com.example.formfit.ui.components.feedback.resetPlankVariables
+import com.example.formfit.ui.components.feedback.resetPreacherCurlVariables
 import com.example.formfit.ui.components.feedback.resetPullupVariables
 import com.example.formfit.ui.components.feedback.resetPushupVariables
 import com.example.formfit.ui.components.feedback.resetRDLVariables
-import com.example.formfit.ui.components.feedback.resetURVariables
+import com.example.formfit.ui.components.feedback.resetSquatVariables
+import com.example.formfit.ui.components.feedback.resetUprightRowVariables
 import com.example.formfit.ui.components.speech.SpeechToTextManager
 import com.example.formfit.ui.components.speech.TextToSpeechManager
 import java.util.concurrent.Executors
@@ -36,17 +42,23 @@ import java.util.concurrent.Executors
 @androidx.camera.core.ExperimentalGetImage
 fun CameraScreen(exerciseId: String?) {
     when (exerciseId) {
+        "squat" -> resetSquatVariables()
+        "conventional-barbell-deadlift" -> resetCDLVariables()
+        "barbell-curl" -> resetBarbellCurlVariables()
+        "plank" -> resetPlankVariables()
+        "preacher-curl" -> resetPreacherCurlVariables()
+        "leg-extension" -> resetLegExtensionVariables()
+        "good-morning" -> resetGMVariables()
         "barbell-shoulder-overhead-press" -> resetBSOPVariables()
-        "lateral-raise" -> resetLRVariables()
+        "lateral-raise" -> resetLateralRaiseVariables()
         "pullup" -> resetPullupVariables()
         "hanging-leg-raise" -> resetHLRVariables()
-        "conventional-barbell-deadlift" -> resetCDLVariables()
         "romanian-deadlift" -> resetRDLVariables()
-        "upright-row" -> resetURVariables()
+        "upright-row" -> resetUprightRowVariables()
         "dip" -> resetDipVariables()
         "pushup" -> resetPushupVariables()
-        "dumbbell-row" -> resetDRVariables()
-        "hip-thrust" -> resetHTVariables()
+        "dumbbell-row" -> resetDumbbellRowVariables()
+        "hip-thrust" -> resetHipThrustVariables()
     }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current

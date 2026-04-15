@@ -84,38 +84,38 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
             highest_hip_angle_HT = hipAngle
         }
 
-//        if (hipAngle >= 180 - ANGLE_TOLERANCE && !is_good_foot_placement_HT) {
-//            if (closer_side_HT == "right") {
-//                if (kneePoint.x > midFootX + X_TOLERANCE) {
-//                    return "Move feet forward."
-//                }
-//
-//                if (kneePoint.x < midFootX - X_TOLERANCE) {
-//                    return "Move feet back."
-//                }
-//
-//                if (kneePoint.x < midFootX + X_TOLERANCE &&
-//                    kneePoint.x > midFootX - X_TOLERANCE) {
-//                    is_good_foot_placement_HT = true
-//                    return "Good foot placement"
-//                }
-//            }
-//            else if (closer_side_HT == "left") {
-//                if (kneePoint.x > midFootX + X_TOLERANCE) {
-//                    return "Move feet back."
-//                }
-//
-//                if (kneePoint.x < midFootX - X_TOLERANCE) {
-//                    return "Move feet forward."
-//                }
-//
-//                if (kneePoint.x < midFootX + X_TOLERANCE &&
-//                    kneePoint.x > midFootX - X_TOLERANCE) {
-//                    is_good_foot_placement_HT = true
-//                    return "Good foot placement"
-//                }
-//            }
-//        }
+        if (hipAngle >= 180 - ANGLE_TOLERANCE && !is_good_foot_placement_HT) {
+            if (closer_side_HT == "right") {
+                if (kneePoint.x > midFootX + X_TOLERANCE) {
+                    return "Move feet forward."
+                }
+
+                if (kneePoint.x < midFootX - X_TOLERANCE) {
+                    return "Move feet back."
+                }
+
+                if (kneePoint.x < midFootX + X_TOLERANCE &&
+                    kneePoint.x > midFootX - X_TOLERANCE) {
+                    is_good_foot_placement_HT = true
+                    return "Good foot placement"
+                }
+            }
+            else if (closer_side_HT == "left") {
+                if (kneePoint.x > midFootX + X_TOLERANCE) {
+                    return "Move feet back."
+                }
+
+                if (kneePoint.x < midFootX - X_TOLERANCE) {
+                    return "Move feet forward."
+                }
+
+                if (kneePoint.x < midFootX + X_TOLERANCE &&
+                    kneePoint.x > midFootX - X_TOLERANCE) {
+                    is_good_foot_placement_HT = true
+                    return "Good foot placement"
+                }
+            }
+        }
 
         if (kneeAngle >= 90 - ANGLE_TOLERANCE &&
             hipAngle >= 180 - ANGLE_TOLERANCE) {
@@ -153,7 +153,7 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
     return ""
 }
 
-fun resetHTVariables() {
+fun resetHipThrustVariables() {
     has_determined_closer_side_HT = false
     closer_side_HT = ""
     is_going_down_HT = false

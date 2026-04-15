@@ -175,7 +175,6 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
     private fun produceFeedback(pose: Pose? = null): String  {
         when (exerciseId) {
             "squat" -> {return  provideSquatFeedback(pose) }
-            "bench-press" -> { return provideBenchPressFeedback(pose) }
             "conventional-barbell-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
             "barbell-curl" -> { return provideBarbellCurlFeedback(pose) }
             "plank" -> { return providePlankFeedback(pose) }
@@ -195,5 +194,4 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
             else -> return ""
         }
     }
-
 }

@@ -131,3 +131,11 @@ fun provideBarbellCurlFeedback(pose: Pose? = null): String {
     }
     return ""
 }
+
+fun resetBarbellCurlVariables() {
+    lowest_angle_barbell_curl = 360.0
+    closer_arm_barbell_curl = ""
+    has_determined_closer_arm_barbell_curl = false
+    going_down_barbell_curl = false
+    isGoodBarbellCurlRep = false
+}

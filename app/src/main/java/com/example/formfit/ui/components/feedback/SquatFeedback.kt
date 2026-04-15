@@ -116,3 +116,11 @@ fun provideSquatFeedback(pose: Pose? = null): String{
 
     return ""
 }
+
+fun resetSquatVariables() {
+    lowest_angle_squat = 360.0
+    closer_leg_squat = "";
+    has_determined_closer_leg_squat = false
+    medium_squat_reached = false
+    deep_squat_reached = false
+}
