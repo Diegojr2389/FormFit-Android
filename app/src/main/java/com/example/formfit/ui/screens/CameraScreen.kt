@@ -21,6 +21,7 @@ import com.example.formfit.ui.components.feedback.resetCDLVariables
 import com.example.formfit.ui.components.feedback.resetDRVariables
 import com.example.formfit.ui.components.feedback.resetDipVariables
 import com.example.formfit.ui.components.feedback.resetHLRVariables
+import com.example.formfit.ui.components.feedback.resetHTVariables
 import com.example.formfit.ui.components.feedback.resetLRVariables
 import com.example.formfit.ui.components.feedback.resetPullupVariables
 import com.example.formfit.ui.components.feedback.resetPushupVariables
@@ -45,6 +46,7 @@ fun CameraScreen(exerciseId: String?) {
         "dip" -> resetDipVariables()
         "pushup" -> resetPushupVariables()
         "dumbbell-row" -> resetDRVariables()
+        "hip-thrust" -> resetHTVariables()
     }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
