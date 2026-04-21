@@ -6,7 +6,7 @@ import com.example.formfit.utils.determineCloserLeg
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 
-var lowest_angle_squat = 360.0
+var lowest_knee_angle_squat = 360.0
 var closer_leg_squat = "";
 var has_determined_closer_leg_squat = false
 var medium_squat_reached = false
@@ -17,7 +17,9 @@ fun provideSquatFeedback(pose: Pose? = null): String{
 
     if (!has_determined_closer_leg_squat) {
         closer_leg_squat = determineCloserLeg(pose)
-        if (closer_leg_squat != "error") has_determined_closer_leg_squat = true
+        if (closer_leg_squat != "error") {
+            has_determined_closer_leg_squat = true
+        }
     }
 
     if (closer_leg_squat == "right") {
@@ -27,44 +29,7 @@ fun provideSquatFeedback(pose: Pose? = null): String{
 
         if (rightHip == null || rightKnee == null || rightAnkle == null) return ""
 
-        else if (rightHip.inFrameLikelihood < 0.95 ||
-                 rightKnee.inFrameLikelihood < 0.95 ||
-                 rightAnkle.inFrameLikelihood < 0.95) {
-            return ""
-        }
-        else {
-            val rightHipPoint = PointF(rightHip.position.x, rightHip.position.y)
-            val rightKneePoint = PointF(rightKnee.position.x, rightKnee.position.y)
-            val rightAnklePoint = PointF(rightAnkle.position.x, rightAnkle.position.y)
-
-            val currentAngle = calculateAngle(rightHipPoint, rightKneePoint, rightAnklePoint)
-
-            if (lowest_angle_squat > currentAngle) {
-                lowest_angle_squat = currentAngle
-            }
-
-            // Medium/Deep squat is optimal
-            if (!deep_squat_reached) {
-                // Medium/Deep squat is optimal
-                if (lowest_angle_squat <= 90 && lowest_angle_squat > 70) {
-                    if (!medium_squat_reached) {
-                        medium_squat_reached = true
-                        return "Solid depth!"
-                    }
-                }
-                else if (lowest_angle_squat <= 70) {
-                    deep_squat_reached = true
-                    return "Excellent! You have hit a deep squat!"
-                }
-            }
-
-            // to reset lowest angle (going up)
-            if ((currentAngle - lowest_angle_squat) > 50 && currentAngle > 160) {
-                lowest_angle_squat = 360.0
-                medium_squat_reached = false
-                deep_squat_reached = false
-            }
-        }
+        return generateFeedback(rightHip, rightKnee, rightAnkle)
     }
 
     else if (closer_leg_squat == "left") {
@@ -73,52 +38,59 @@ fun provideSquatFeedback(pose: Pose? = null): String{
         val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
 
         if (leftHip == null || leftKnee == null || leftAnkle == null) return ""
-        else if (leftHip.inFrameLikelihood < 0.95 ||
-            leftKnee.inFrameLikelihood < 0.95 ||
-            leftAnkle.inFrameLikelihood < 0.95) {
-            return ""
-        }
-        else {
-            val leftHipPoint = PointF(leftHip.position.x, leftHip.position.y)
-            val leftKneePoint = PointF(leftKnee.position.x, leftKnee.position.y)
-            val leftAnklePoint = PointF(leftAnkle.position.x, leftAnkle.position.y)
 
-            val currentAngle = calculateAngle(leftHipPoint, leftKneePoint, leftAnklePoint)
+        return generateFeedback(leftHip, leftKnee, leftAnkle)
+    }
 
-            // to calculate lowest angle
-            if (lowest_angle_squat > currentAngle) {
-                lowest_angle_squat = currentAngle
-            }
+    return ""
+}
 
-            // Medium/Deep squat is optimal
-            if (!deep_squat_reached) {
-                // Medium/Deep squat is optimal
-                if (lowest_angle_squat <= 90 && lowest_angle_squat > 70) {
-                    if (!medium_squat_reached) {
-                        medium_squat_reached = true
-                        return "Solid depth!"
-                    }
-                }
-                else if (lowest_angle_squat <= 45) {
-                    deep_squat_reached = true
-                    return "Excellent! You have hit a deep squat!"
-                }
-            }
+private fun generateFeedback(hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): String {
+    if (hip.inFrameLikelihood < 0.95 ||
+        knee.inFrameLikelihood < 0.95 ||
+        ankle.inFrameLikelihood < 0.95) {
+        return ""
+    }
 
-            // to reset lowest angle (going up)
-            if ((currentAngle - lowest_angle_squat) > 50 && currentAngle > 160) {
-                lowest_angle_squat = 360.0
-                medium_squat_reached = false
-                deep_squat_reached = false
+    val hipPoint = PointF(hip.position.x, hip.position.y)
+    val kneePoint = PointF(knee.position.x, knee.position.y)
+    val anklePoint = PointF(ankle.position.x, ankle.position.y)
+
+    val kneeAngle = calculateAngle(hipPoint, kneePoint, anklePoint)
+
+    // to calculate lowest angle
+    if (lowest_knee_angle_squat > kneeAngle) {
+        lowest_knee_angle_squat = kneeAngle
+    }
+
+    // Medium/Deep squat is optimal
+    if (!deep_squat_reached) {
+        // Medium/Deep squat is optimal
+        if (lowest_knee_angle_squat <= 90 && lowest_knee_angle_squat > 70) {
+            if (!medium_squat_reached) {
+                medium_squat_reached = true
+                return "Solid depth!"
             }
         }
+        else if (lowest_knee_angle_squat <= 45) {
+            deep_squat_reached = true
+            return "Excellent! You have hit a deep squat!"
+        }
+    }
+
+    // to reset lowest angle (going up)
+    if ((kneeAngle - lowest_knee_angle_squat) > 20 + ANGLE_TOLERANCE) {
+        lowest_knee_angle_squat = 360.0
+        medium_squat_reached = false
+        deep_squat_reached = false
+        return "Reset"
     }
 
     return ""
 }
 
 fun resetSquatVariables() {
-    lowest_angle_squat = 360.0
+    lowest_knee_angle_squat = 360.0
     closer_leg_squat = "";
     has_determined_closer_leg_squat = false
     medium_squat_reached = false

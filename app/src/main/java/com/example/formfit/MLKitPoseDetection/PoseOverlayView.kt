@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import com.example.formfit.ui.components.feedback.provideBarbellCurlFeedback
 import com.example.formfit.ui.components.feedback.provideBarbellOverheadPressFeedback
-import com.example.formfit.ui.components.feedback.provideBenchPressFeedback
 import com.example.formfit.ui.components.feedback.provideConventionalDeadliftFeedback
 import com.example.formfit.ui.components.feedback.provideDipFeedback
 import com.example.formfit.ui.components.feedback.provideDumbbellRowFeedback

@@ -1,13 +1,21 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
 
+// Read local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+val baseUrl = localProperties["BASE_URL"] as String? ?: "http://10.0.0.101:8000/"
+
 android {
     namespace = "com.example.formfit"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.formfit"
@@ -17,6 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
     }
 
 
@@ -35,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -61,8 +72,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
     implementation("androidx.navigation:navigation-compose:2.9.7")
-//    implementation("com.google.mediapipe:tasks-vision:0.10.0")
     // base sdk
     implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
     // accurate sdk
@@ -72,4 +83,10 @@ dependencies {
 
     // for wrapping
     implementation("com.google.accompanist:accompanist-flowlayout:0.36.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+
+    // Gson Converter
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 }
