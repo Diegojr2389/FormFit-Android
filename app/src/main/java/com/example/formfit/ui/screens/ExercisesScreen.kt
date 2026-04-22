@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,10 +30,20 @@ import com.google.accompanist.flowlayout.FlowRow
 fun ExercisesScreen(navController : NavController) {
     // keeps track of what exercise we are looking at
     var selectedId by remember { mutableStateOf<String?>(null) }
+    val scrollState = rememberScrollState()
+    var shouldScroll by remember { mutableStateOf(false) }
+
+    // Triggers after new content has been laid out and maxValue has updated
+    LaunchedEffect(scrollState.maxValue, selectedId) {
+        if (shouldScroll) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(10.dp),
         color = MaterialTheme.colorScheme.onBackground
     ) {
@@ -43,12 +54,15 @@ fun ExercisesScreen(navController : NavController) {
             FlowRow(
                 mainAxisSpacing = 12.dp,
                 crossAxisSpacing = 2.dp,
-                modifier = Modifier.padding(horizontal = 10.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 EXERCISES.forEach { exercise ->
                     val isSelected = selectedId == exercise.id
                     Button(
-                        onClick = {selectedId = exercise.id}, // updates selectedId
+                        onClick = {
+                            selectedId = exercise.id
+                            shouldScroll = true
+                        }, // updates selectedId
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray

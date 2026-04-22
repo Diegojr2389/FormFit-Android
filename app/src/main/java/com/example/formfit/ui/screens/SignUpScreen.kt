@@ -21,18 +21,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.formfit.auth.LoginViewModel
+import com.example.formfit.auth.SignUpViewModel
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: (String) -> Unit,
-    onNavigateToSignUp: () -> Unit,
-    viewModel: LoginViewModel = viewModel()
+fun SignUpScreen(
+    onSignUpSuccess: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    viewModel: SignUpViewModel = viewModel()
 ) {
     var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("") }
 
     Column(
@@ -43,7 +43,7 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Login")
+        Text(text = "Sign Up")
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -57,21 +57,29 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { viewModel.login(username, password, onLoginSuccess) },
+            onClick = { viewModel.signup(username, email, password, onSignUpSuccess) },
             enabled = !viewModel.isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
+            Text("Sign Up")
         }
 
         Row(
@@ -80,20 +88,15 @@ fun LoginScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Don't have an Account? ",
+                text = "Already have an Account? ",
                 color = Color.Gray
             )
-            TextButton( onClick = onNavigateToSignUp ) {
+            TextButton( onClick = onNavigateToLogin ) {
                 Text(
-                    text = "Sign Up",
+                    text = "Login",
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-        }
-
-        viewModel.errorMessage?.let {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = it, color = Color.Red)
         }
     }
 }
