@@ -2,6 +2,7 @@ package com.example.formfit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
@@ -14,11 +15,16 @@ import com.example.formfit.ui.theme.FormFitTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        enableEdgeToEdge(
+            // navigation bar color
+            navigationBarStyle = SystemBarStyle.dark(0xFF050304.toInt())
+        )
+
         setContent {
             FormFitTheme {
                 MainTabs(
-                    navController = rememberNavController()
+                    navController = rememberNavController(),
                 )
             }
         }
@@ -31,7 +37,7 @@ class MainActivity : ComponentActivity() {
 fun GreetingPreview() {
     FormFitTheme {
         MainTabs(
-            navController = rememberNavController()
+            navController = rememberNavController(),
         )
     }
 }

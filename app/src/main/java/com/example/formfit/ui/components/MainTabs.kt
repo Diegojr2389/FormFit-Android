@@ -1,13 +1,10 @@
 package com.example.formfit.ui.components
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -17,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -24,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.formfit.R
 import com.example.formfit.ui.screens.CameraScreen
 import com.example.formfit.ui.screens.ChatbotScreen
 import com.example.formfit.ui.screens.ExercisesScreen
@@ -34,57 +33,96 @@ import com.example.formfit.ui.screens.ProfileScreen
 @OptIn(ExperimentalLayoutApi::class)
 @Composable // allows rendering in the UI
 fun MainTabs(navController: NavHostController) {
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
-            val navBackStackEntry = navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry.value?.destination?.route
-
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.onBackground,
-                tonalElevation = 0.dp
-            ){
-                NavigationBarItem(
-                    selected = currentRoute == "home",
-                    onClick = { navController.navigate("home") },
-                    icon = { Icon(Icons.Default.Home, null, modifier = Modifier.size(36.dp)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = Color.Transparent
+            if (currentRoute != "chatbot") {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.onBackground,
+                    tonalElevation = 0.dp
+                ){
+                    NavigationBarItem(
+                        selected = currentRoute == "home",
+                        onClick = { navController.navigate("home") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (currentRoute == "home") R.drawable.ic_home_filled
+                                    else R.drawable.ic_home
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = Color.Transparent
+                        )
                     )
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "exercises",
-                    onClick = { navController.navigate("exercises") },
-                    icon = { Icon(Icons.Filled.FitnessCenter, null, modifier = Modifier.size(36.dp)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = Color.Transparent
+                    NavigationBarItem(
+                        selected = currentRoute == "exercises",
+                        onClick = { navController.navigate("exercises") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (currentRoute == "exercises") R.drawable.ic_dumbbell_filled
+                                    else R.drawable.ic_dumbbell
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = Color.Transparent
+                        )
                     )
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "chatbot",
-                    onClick = { navController.navigate("chatbot") },
-                    icon = { Icon(Icons.Default.SmartToy, null, modifier = Modifier.size(40.dp)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = Color.Transparent
+                    NavigationBarItem(
+                        selected = currentRoute == "chatbot",
+                        onClick = { navController.navigate("chatbot") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (currentRoute == "chatbot") R.drawable.ic_chat_filled
+                                    else R.drawable.ic_chat
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = Color.Transparent
+                        )
                     )
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "profile",
-                    onClick = { navController.navigate("profile") },
-                    icon = { Icon(Icons.Default.Person, null, modifier = Modifier.size(36.dp)) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = Color.Transparent
+                    NavigationBarItem(
+                        selected = currentRoute == "profile",
+                        onClick = { navController.navigate("profile") },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (currentRoute == "profile") R.drawable.ic_profile_filled
+                                    else R.drawable.ic_profile
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = Color.Transparent
+                        )
                     )
-                )
+                }
             }
         }
     ) { innerPadding ->
@@ -92,6 +130,10 @@ fun MainTabs(navController: NavHostController) {
         NavHost(
             navController = navController,
             startDestination = "home",
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) },
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen() }
@@ -111,7 +153,7 @@ fun MainTabs(navController: NavHostController) {
                 // so it can adjust its pose detection logic accordingly
                 CameraScreen(exerciseId = exerciseId)
             }
-            composable("chatbot") { ChatbotScreen() }
+            composable("chatbot") { ChatbotScreen(navController) }
             composable("profile")  { ProfileScreen() }
         }
     }

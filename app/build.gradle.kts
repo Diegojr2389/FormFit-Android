@@ -75,9 +75,9 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.9.7")
     // base sdk
-    implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
+//    implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
     // accurate sdk
-//    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
     // For more icons
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -89,4 +89,10 @@ dependencies {
 
     // Gson Converter
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
+    // For Navigation Bar styling
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+
+    // Preferences DataStore (SharedPreferences like APIs)
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
 }

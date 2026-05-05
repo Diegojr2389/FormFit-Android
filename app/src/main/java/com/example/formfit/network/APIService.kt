@@ -1,5 +1,7 @@
 package com.example.formfit.network
 
+import com.example.formfit.models.ChatRequest
+import com.example.formfit.models.ChatResponse
 import com.example.formfit.models.LoginRequest
 import com.example.formfit.models.SignUpRequest
 import com.example.formfit.models.TokenResponse
@@ -26,9 +28,15 @@ interface ApiService {
         @Body request: SignUpRequest
     ) : Response<Unit>
 
+    @POST("chat/")
+    suspend fun sendMessage(
+        @Body request: ChatRequest
+    ) : Response<ChatResponse>
+
     // -------------------------- GET --------------------------
     @GET("users/me")
     suspend fun getCurrentUser(
         @Header("Authorization") token: String
     ): Response<UserResponse>
+
 }

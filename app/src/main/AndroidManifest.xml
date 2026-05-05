@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FormFit">
 
-        <!-- LoginActivity launches first -->
+<!--        LoginActivity launches first -->
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -38,8 +38,16 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.FormFit">
+            <!-- android:windowSoftInputMode="adjustResize"
+            Resize the screen content when the keyboard appears instead of panning the whole screen -->
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 

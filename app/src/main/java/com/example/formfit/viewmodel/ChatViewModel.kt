@@ -1,0 +1,56 @@
+package com.example.formfit.viewmodel
+
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.formfit.models.ChatMessage
+import com.example.formfit.network.RetrofitClient
+import com.example.formfit.repository.ChatRepository
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+class ChatViewModel : ViewModel() {
+    val outputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+    val inputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
+    private val repository = ChatRepository(RetrofitClient.apiService)
+
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var messages by mutableStateOf<List<ChatMessage>>(emptyList())
+        private set
+
+    fun send(userId: Int, message: String, createdAt: String) {
+        viewModelScope.launch {
+            errorMessage = null
+            isLoading = true
+
+            val userDate = inputFormatter.parse(createdAt)
+            messages = messages + listOf(
+                ChatMessage(message = message, createdAt = outputFormatter.format(userDate!!), isUser = true)
+            )
+
+            try {
+                val response = repository.sendMessage(userId, message, createdAt)
+                val botDate = inputFormatter.parse(response.createdAt)
+                messages = messages + listOf(
+                    ChatMessage(message = response.response, createdAt = outputFormatter.format(botDate!!), isUser = false)
+                )
+
+            } catch(e: Exception) {
+                errorMessage = e.message ?: "Unknown Error"
+                Log.d("Chat", "Error: ${e.message}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+}

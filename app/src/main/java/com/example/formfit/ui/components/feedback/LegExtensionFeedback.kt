@@ -85,9 +85,11 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         // going down
         if (highest_leg_angle_leg_extension - legAngle >= 40 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = true
+            highest_leg_angle_leg_extension = 0.0
             if (!is_good_up_leg_extension) {
                 return "On next rep, extend your legs more."
             }
+            is_good_up_leg_extension = false
         }
     }
     else {
@@ -98,16 +100,12 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         // extended legs well
         if (legAngle <= 90 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = false
-            is_good_up_leg_extension = false
-            highest_leg_angle_leg_extension = 0.0
             lowest_leg_angle_leg_extension = 360.0
             return "Good. Full range of motion."
         }
 
         if (legAngle - lowest_leg_angle_leg_extension >= 30 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = false
-            is_good_up_leg_extension = false
-            highest_leg_angle_leg_extension = 0.0
             lowest_leg_angle_leg_extension = 360.0
             return "On next rep, extend your legs higher."
         }
