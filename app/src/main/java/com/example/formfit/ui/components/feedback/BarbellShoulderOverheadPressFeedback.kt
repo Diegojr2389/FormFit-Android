@@ -2,6 +2,8 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.formfit.models.FormFeedback
+import com.example.formfit.ui.theme.FormFitTheme
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -18,8 +20,8 @@ var is_grip_good_SOP = false
 var x_offset_SOP = 0
 var Y_TOLERANCE = 15
 
-fun provideBarbellOverheadPressFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideBarbellOverheadPressFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_SOP) {
         closer_side_SOP = determineCloserSide(pose)
@@ -36,7 +38,7 @@ fun provideBarbellOverheadPressFeedback(pose: Pose? = null): String {
         val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
 
         if (rightHip == null || rightShoulder == null || rightElbow == null || rightWrist == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightHip, rightShoulder, rightElbow, rightWrist)
@@ -49,21 +51,21 @@ fun provideBarbellOverheadPressFeedback(pose: Pose? = null): String {
         val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
 
         if (leftHip == null || leftShoulder == null || leftElbow == null || leftWrist == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftHip, leftShoulder, leftElbow, leftWrist)
     }
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: PoseLandmark,
-                             wrist: PoseLandmark): String {
+                             wrist: PoseLandmark): FormFeedback {
     if (hip.inFrameLikelihood < 0.95 ||
         shoulder.inFrameLikelihood < 0.95 ||
         elbow.inFrameLikelihood < 0.95 ||
         wrist.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val hipPoint = PointF(hip.position.x, hip.position.y)
@@ -78,13 +80,13 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
     if (!is_grip_good_SOP) {
         if (hipShElAngle >= 45 - ANGLE_TOLERANCE && hipShElAngle <= 45 + ANGLE_TOLERANCE) {
             is_grip_good_SOP = true
-            return "Good grip width. You may now start."
+            return FormFeedback(message = "Good grip width. You may now start.")
         }
         else if (hipShElAngle <= 45 - ANGLE_TOLERANCE) {
-            return "Widen your grip until you hear: Good grip width"
+            return FormFeedback("Widen your grip until you hear: Good grip width")
         }
         else if (hipShElAngle >= 45 + ANGLE_TOLERANCE) {
-            return "Decrease width of your grip until you hear: Good grip width"
+            return FormFeedback("Decrease width of your grip until you hear: Good grip width")
         }
     }
     // checks if bar is going low and high enough
@@ -97,14 +99,20 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
             // good rep at top
             if (elbowAngle >= 180 - ANGLE_TOLERANCE) {
                 is_good_up_SOP = true
-                return "Perfect. Arms extended all the way."
+                return FormFeedback(
+                    message = "Perfect. Arms extended all the way.",
+                    isTop = true
+                )
             }
 
             if (highest_elbow_angle_SOP - elbowAngle >= 20 + ANGLE_TOLERANCE) {
                 is_going_down_SOP = true
                 highest_elbow_angle_SOP = 0.0
                 if (!is_good_up_SOP) {
-                    return "On next rep, extend your arms more"
+                    return FormFeedback(
+                        message = "On next rep, fully extend your arms",
+                        isNextRepFeedback = true
+                    )
                 }
                 is_good_up_SOP = false
             }
@@ -116,14 +124,20 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
 
             if (wristPoint.y >= shoulderPoint.y - Y_TOLERANCE) {
                 is_good_down_SOP = true
-                return "Perfect. Bar and shoulders are aligned."
+                return FormFeedback(
+                    message = "Perfect. Bar and shoulders are aligned.",
+                    isBottom = true
+                )
             }
 
             if (highest_wrist_Y - wristPoint.y >= 20 + Y_TOLERANCE) {
                 is_going_down_SOP = false
                 highest_wrist_Y = 0.0f
                 if (!is_good_down_SOP) {
-                    return "On next rep, lower bar to shoulder level."
+                    return FormFeedback(
+                        message = "On next rep, lower bar to shoulder level.",
+                        isNextRepFeedback = true
+                    )
                 }
                 is_good_down_SOP = false
             }
@@ -131,7 +145,7 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
     }
 
 
-    return ""
+    return FormFeedback("")
 }
 
 fun resetBSOPVariables() {

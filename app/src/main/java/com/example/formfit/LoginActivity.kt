@@ -6,14 +6,39 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
+import com.example.formfit.datastore.SessionManager
 import com.example.formfit.ui.screens.LoginScreen
 import com.example.formfit.ui.theme.FormFitTheme
+import kotlinx.coroutines.launch
 
 @androidx.camera.core.ExperimentalGetImage
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val sessionManager = SessionManager(applicationContext)
+
+        lifecycleScope.launch {
+            val isLoggedIn = sessionManager.isLoggedIn()
+
+            if (isLoggedIn) {
+                startActivity(
+                    Intent(
+                        this@LoginActivity,
+                        MainActivity::class.java
+                    )
+                )
+
+                finish()
+            }
+            else {
+                showLoginScreen()
+            }
+        }
+    }
+
+    private fun showLoginScreen() {
         enableEdgeToEdge(
             // navigation bar color
             navigationBarStyle = SystemBarStyle.dark(0xFF111111.toInt())
@@ -22,7 +47,7 @@ class LoginActivity : ComponentActivity() {
         setContent {
             FormFitTheme {
                 LoginScreen(
-                    onLoginSuccess = { token ->
+                    onLoginSuccess = {
                         // intent = messaging object used to start another activity
                         // can carry extra data like "username" to the destination activity
                         val intent = Intent(this, MainActivity::class.java)

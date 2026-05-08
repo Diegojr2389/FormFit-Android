@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -44,6 +45,7 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     viewModel: SignUpViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("") }
@@ -119,7 +121,7 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.signup(username, email, password, onSignUpSuccess) },
+                onClick = { viewModel.signup(username, email, password, context,onSignUpSuccess) },
                 enabled = !viewModel.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {

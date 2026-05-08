@@ -1,5 +1,6 @@
 package com.example.formfit.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,11 +14,13 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(
+    context : Context
+) : ViewModel() {
     val outputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     val inputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-    private val repository = ChatRepository(RetrofitClient.apiService)
+    private val repository = ChatRepository(RetrofitClient.create(context))
 
     var errorMessage by mutableStateOf<String?>(null)
         private set

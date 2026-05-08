@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
+import com.example.formfit.datastore.SessionManager
 import com.example.formfit.datastore.UserDataStore
 import com.example.formfit.repository.AuthRepository
 import com.example.formfit.network.RetrofitClient
@@ -17,8 +18,6 @@ import kotlinx.coroutines.launch
 // A ViewModel holds your screen's data and logic separately from the UI, so it survives things
 // like screen rotations without losing state.
 class LoginViewModel : ViewModel() {
-    private val repository = AuthRepository(RetrofitClient.apiService)
-
     var errorMessage by mutableStateOf<String?>(null)
         private set // only this view model can change the variable
 
@@ -26,6 +25,12 @@ class LoginViewModel : ViewModel() {
         private set // only this view model can change the variable
 
     fun login(username: String, password: String, context: Context, onSuccess: (String) -> Unit) {
+        val sessionManager = SessionManager(context)
+
+        val repository = AuthRepository(
+            RetrofitClient.create(context),
+            sessionManager
+        )
         // starts a coroutine (async work) that's tied to the ViewModel's lifecycle, so it cancels
         // automatically if the screen is destroyed
         viewModelScope.launch {

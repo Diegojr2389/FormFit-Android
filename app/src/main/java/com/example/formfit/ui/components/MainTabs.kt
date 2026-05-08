@@ -1,5 +1,7 @@
 package com.example.formfit.ui.components
 
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -22,12 +25,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.formfit.LoginActivity
 import com.example.formfit.R
 import com.example.formfit.ui.screens.CameraScreen
 import com.example.formfit.ui.screens.ChatbotScreen
 import com.example.formfit.ui.screens.ExercisesScreen
 import com.example.formfit.ui.screens.HomeScreen
 import com.example.formfit.ui.screens.ProfileScreen
+import com.example.formfit.viewmodel.ProfileViewModel
 
 @androidx.camera.core.ExperimentalGetImage
 @OptIn(ExperimentalLayoutApi::class)
@@ -35,8 +40,6 @@ import com.example.formfit.ui.screens.ProfileScreen
 fun MainTabs(navController: NavHostController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
-
-
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.onBackground,
@@ -154,7 +157,18 @@ fun MainTabs(navController: NavHostController) {
                 CameraScreen(exerciseId = exerciseId)
             }
             composable("chatbot") { ChatbotScreen(navController) }
-            composable("profile")  { ProfileScreen() }
+            composable("profile")  {
+                val context = LocalContext.current
+                ProfileScreen(
+                    onLoggedOut = {
+                        val intent = Intent(context, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(intent)
+                        // safely casts the context into an Activity so that we can call finish()
+                        (context as? ComponentActivity)?.finish()
+                    }
+                )
+            }
         }
     }
 }

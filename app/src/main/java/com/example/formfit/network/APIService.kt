@@ -3,6 +3,7 @@ package com.example.formfit.network
 import com.example.formfit.models.ChatRequest
 import com.example.formfit.models.ChatResponse
 import com.example.formfit.models.LoginRequest
+import com.example.formfit.models.RefreshRequest
 import com.example.formfit.models.SignUpRequest
 import com.example.formfit.models.TokenResponse
 import com.example.formfit.models.UserResponse
@@ -32,6 +33,11 @@ interface ApiService {
     suspend fun sendMessage(
         @Body request: ChatRequest
     ) : Response<ChatResponse>
+
+    @POST("refresh")
+    suspend fun refreshToken(
+        @Body request: RefreshRequest
+    ) : Response<TokenResponse>
 
     // -------------------------- GET --------------------------
     @GET("users/me")

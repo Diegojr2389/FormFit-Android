@@ -29,47 +29,8 @@ fun providePlankFeedback(pose: Pose? = null): String {
         val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
 
         if (rightShoulder == null || rightHip == null || rightKnee == null || rightAnkle == null) return ""
-        else if (rightShoulder.inFrameLikelihood < 0.95 ||
-            rightHip.inFrameLikelihood < 0.95 ||
-            rightKnee.inFrameLikelihood < 0.95 ||
-            rightAnkle.inFrameLikelihood < 0.95) {
-            return ""
-        }
-        else {
-            val rightShoulderPoint = PointF(rightShoulder.position.x, rightShoulder.position.y)
-            val rightHipPoint = PointF(rightHip.position.x, rightHip.position.y)
-            val rightKneePoint = PointF(rightKnee.position.x, rightKnee.position.y)
-            val rightAnklePoint = PointF(rightAnkle.position.x, rightAnkle.position.y)
 
-            val shHipAnkAngle = calculateAngle(rightShoulderPoint, rightHipPoint, rightAnklePoint)
-            val hipknAnkAngle = calculateAngle(rightHipPoint, rightKneePoint, rightAnklePoint)
-
-            if (!hip_feedback_triggered_plank && !knee_feedback_triggered_plank && !first_feedback_triggered) {
-                first_feedback_triggered = true
-                return "Nice! Hold that position."
-            }
-
-            if (shHipAnkAngle < 180 - ANGLE_TOLERANCE) {
-                hip_feedback_triggered_plank = true
-                return "Hips are too high. Lower them."
-            }
-            if (shHipAnkAngle > 180) {
-                hip_feedback_triggered_plank = true
-                return "Hips are too low. Lift them."
-            }
-            if (hipknAnkAngle < 170 - ANGLE_TOLERANCE) {
-                knee_feedback_triggered_plank = true
-                return "Your knees are bending. Straighten them."
-            }
-            if (shHipAnkAngle >= 180 - ANGLE_TOLERANCE && shHipAnkAngle <= 180 + ANGLE_TOLERANCE && hip_feedback_triggered_plank) {
-                hip_feedback_triggered_plank = false
-                return "Perfect. Your hips are now aligned. Hold that position."
-            }
-            if (hipknAnkAngle > 170 - ANGLE_TOLERANCE && knee_feedback_triggered_plank) {
-                knee_feedback_triggered_plank = false
-                return "Perfect. Your knees are now aligned. Hold that position."
-            }
-        }
+        return generateFeedback(rightShoulder, rightHip, rightKnee, rightAnkle)
     }
     else if (closer_side_plank == "left"){
         val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
@@ -78,47 +39,53 @@ fun providePlankFeedback(pose: Pose? = null): String {
         val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
 
         if (leftShoulder == null || leftHip == null || leftKnee == null || leftAnkle == null) return ""
-        else if (leftShoulder.inFrameLikelihood < 0.95 ||
-            leftHip.inFrameLikelihood < 0.95 ||
-            leftKnee.inFrameLikelihood < 0.95 ||
-            leftAnkle.inFrameLikelihood < 0.95) {
-            return ""
-        }
-        else {
-            val leftShoulderPoint = PointF(leftShoulder.position.x, leftShoulder.position.y)
-            val leftHipPoint = PointF(leftHip.position.x, leftHip.position.y)
-            val leftKneePoint = PointF(leftKnee.position.x, leftKnee.position.y)
-            val leftAnklePoint = PointF(leftAnkle.position.x, leftAnkle.position.y)
 
-            val shHipAnkAngle = calculateAngle(leftShoulderPoint, leftHipPoint, leftAnklePoint)
-            val hipknAnkAngle = calculateAngle(leftHipPoint, leftKneePoint, leftAnklePoint)
-
-            if (shHipAnkAngle < 180 - ANGLE_TOLERANCE) {
-                hip_feedback_triggered_plank = true
-                return "Hips are too high. Lower them."
-            }
-            if (shHipAnkAngle > 180) {
-                hip_feedback_triggered_plank = true
-                return "Hips are too low. Lift them."
-            }
-            if (hipknAnkAngle < 170 - ANGLE_TOLERANCE) {
-                knee_feedback_triggered_plank = true
-                return "Your knees are bending. Straighten them."
-            }
-            if (shHipAnkAngle >= 180 - ANGLE_TOLERANCE && shHipAnkAngle <= 180 + ANGLE_TOLERANCE && hip_feedback_triggered_plank) {
-                hip_feedback_triggered_plank = false
-                return "Perfect. Your hips are now aligned. Hold that position."
-            }
-            if (hipknAnkAngle > 170 - ANGLE_TOLERANCE && knee_feedback_triggered_plank) {
-                knee_feedback_triggered_plank = false
-                return "Perfect. Your knees are now aligned. Hold that position."
-            }
-            if (!first_feedback_triggered) {
-                first_feedback_triggered = true
-                return "Nice! Hold that position."
-            }
-        }
+        return generateFeedback(leftShoulder, leftHip, leftKnee, leftAnkle)
     }
+    return ""
+}
+
+private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): String {
+    if (shoulder.inFrameLikelihood < 0.95 ||
+        hip.inFrameLikelihood < 0.95 ||
+        knee.inFrameLikelihood < 0.95 ||
+        ankle.inFrameLikelihood < 0.95) {
+        return ""
+    }
+
+    val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
+    val hipPoint = PointF(hip.position.x, hip.position.y)
+    val kneePoint = PointF(knee.position.x, knee.position.y)
+    val anklePoint = PointF(ankle.position.x, ankle.position.y)
+
+    val shHipAnkAngle = calculateAngle(shoulderPoint, hipPoint, anklePoint)
+    val hipknAnkAngle = calculateAngle(hipPoint, kneePoint, anklePoint)
+
+    if (shHipAnkAngle < 180 - ANGLE_TOLERANCE) {
+        hip_feedback_triggered_plank = true
+        return "Hips are too high. Lower them."
+    }
+    if (shHipAnkAngle > 180) {
+        hip_feedback_triggered_plank = true
+        return "Hips are too low. Lift them."
+    }
+    if (hipknAnkAngle < 170 - ANGLE_TOLERANCE) {
+        knee_feedback_triggered_plank = true
+        return "Your knees are bending. Straighten them."
+    }
+    if (shHipAnkAngle >= 180 - ANGLE_TOLERANCE && shHipAnkAngle <= 180 + ANGLE_TOLERANCE && hip_feedback_triggered_plank) {
+        hip_feedback_triggered_plank = false
+        return "Perfect. Your hips are now aligned. Hold that position."
+    }
+    if (hipknAnkAngle > 170 - ANGLE_TOLERANCE && knee_feedback_triggered_plank) {
+        knee_feedback_triggered_plank = false
+        return "Perfect. Your knees are now aligned. Hold that position."
+    }
+    if (!first_feedback_triggered) {
+        first_feedback_triggered = true
+        return "Nice! Hold that position."
+    }
+
     return ""
 }
 
