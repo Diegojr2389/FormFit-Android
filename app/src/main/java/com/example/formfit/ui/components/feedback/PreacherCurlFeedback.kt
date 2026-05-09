@@ -2,6 +2,7 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserArm
 import com.google.mlkit.vision.pose.Pose
@@ -13,8 +14,8 @@ var lowest_arm_angle_preacher = 360.0
 var highest_arm_angle_preacher = 0.0
 var is_going_down_preacher = false
 var is_good_up_preacher = false
-fun providePreacherCurlFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun providePreacherCurlFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_arm_preacher_curl) {
         closer_arm_preacher_curl = determineCloserArm(pose)
@@ -28,7 +29,7 @@ fun providePreacherCurlFeedback(pose: Pose? = null): String {
         val rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
         val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
 
-        if (rightShoulder == null|| rightElbow == null || rightWrist == null) return ""
+        if (rightShoulder == null|| rightElbow == null || rightWrist == null) return FormFeedback("")
 
         return generateFeedback(rightShoulder, rightElbow, rightWrist)
     }
@@ -37,18 +38,18 @@ fun providePreacherCurlFeedback(pose: Pose? = null): String {
         val leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
         val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
 
-        if (leftShoulder == null|| leftElbow == null || leftWrist == null) return ""
+        if (leftShoulder == null|| leftElbow == null || leftWrist == null) return FormFeedback("")
 
         return generateFeedback(leftShoulder, leftElbow, leftWrist)
     }
-    return ""
+    return FormFeedback("")
 }
 
-private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist: PoseLandmark): String {
+private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist: PoseLandmark): FormFeedback {
     if (shoulder.inFrameLikelihood < 0.95 ||
         elbow.inFrameLikelihood < 0.95 ||
         wrist.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
@@ -63,12 +64,20 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
         }
         if (armAngle <= 80) {
             is_good_up_preacher = true
-            return "Perfect. Keep it controlled."
+            return FormFeedback(
+                message = "Perfect. Good Squeeze.",
+                isTop = true
+            )
         }
         // going down
         if (armAngle - lowest_arm_angle_preacher >= 40 + ANGLE_TOLERANCE) {
             is_going_down_preacher = true
-            if (!is_good_up_preacher) return "On next rep, lift higher and squeeze at the top"
+            if (!is_good_up_preacher) {
+                return FormFeedback(
+                    message = "On next rep, lift higher and squeeze at the top",
+                    isNextRepFeedback = true
+                )
+            }
         }
     }
     else {
@@ -80,17 +89,23 @@ private fun generateFeedback(shoulder: PoseLandmark, elbow: PoseLandmark, wrist:
             is_going_down_preacher = false
             is_good_up_preacher = false
             lowest_arm_angle_preacher = 360.0
-            return "Good. Full range of motion."
+            return FormFeedback(
+                message = "Perfect. Full extension!",
+                isBottom = true
+            )
         }
         // did not extend arms all the way down (is now going up)
         if (highest_arm_angle_preacher - armAngle >= 30 + ANGLE_TOLERANCE) {
             is_going_down_preacher = false
             is_good_up_preacher = false
             lowest_arm_angle_preacher = 360.0
-            return "On next rep, extend your arms all the way down."
+            return FormFeedback(
+                message = "On next rep, extend your arms all the way down.",
+                isNextRepFeedback = true
+            )
         }
     }
-    return ""
+    return FormFeedback("")
 }
 
 fun resetPreacherCurlVariables() {

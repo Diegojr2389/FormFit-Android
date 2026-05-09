@@ -175,22 +175,22 @@ class PoseOverlayView(context: Context, private val ttsManager: TextToSpeechMana
     private fun produceFeedback(pose: Pose? = null): FormFeedback  {
         when (exerciseId) {
             "squat" -> {return  provideSquatFeedback(pose) }
-//            "conventional-barbell-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
+            "conventional-barbell-deadlift" -> { return provideConventionalDeadliftFeedback(pose) }
             "barbell-curl" -> { return provideBarbellCurlFeedback(pose) }
-//            "plank" -> { return providePlankFeedback(pose) }
-//            "preacher-curl" -> { return providePreacherCurlFeedback(pose) }
-//            "leg-extension" -> { return provideLegExtensionFeedback(pose) }
-//            "good-morning" -> { return provideGoodMorningFeedback(pose) }
+            "plank" -> { return providePlankFeedback(pose) }
+            "preacher-curl" -> { return providePreacherCurlFeedback(pose) }
+            "leg-extension" -> { return provideLegExtensionFeedback(pose) }
+            "good-morning" -> { return provideGoodMorningFeedback(pose) }
             "barbell-shoulder-overhead-press" -> { return provideBarbellOverheadPressFeedback(pose) }
-//            "lateral-raise" -> { return provideLateralRaiseFeedback(pose) }
-//            "pullup" -> { return providePullupFeedback(pose) }
-//            "hanging-leg-raise" -> { return provideHangingLegRaiseFeedback(pose) }
-//            "romanian-deadlift" -> { return provideRomanianDeadliftFeedback(pose) }
-//            "upright-row" -> { return provideUprightRowFeedback(pose) }
-//            "dip" -> { return provideDipFeedback(pose) }
-//            "pushup" -> { return providePushupFeedback(pose, rotationDegrees) }
-//            "dumbbell-row" -> { return provideDumbbellRowFeedback(pose) }
-//            "hip-thrust" -> { return provideHipThrustFeedback(pose) }
+            "lateral-raise" -> { return provideLateralRaiseFeedback(pose) }
+            "pullup" -> { return providePullupFeedback(pose) }
+            "hanging-leg-raise" -> { return provideHangingLegRaiseFeedback(pose) }
+            "romanian-deadlift" -> { return provideRomanianDeadliftFeedback(pose) }
+            "upright-row" -> { return provideUprightRowFeedback(pose) }
+            "dip" -> { return provideDipFeedback(pose) }
+            "pushup" -> { return providePushupFeedback(pose, rotationDegrees) }
+            "dumbbell-row" -> { return provideDumbbellRowFeedback(pose) }
+            "hip-thrust" -> { return provideHipThrustFeedback(pose) }
             else -> return FormFeedback("")
         }
     }

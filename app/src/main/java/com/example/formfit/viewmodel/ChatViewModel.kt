@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.formfit.models.ChatMessage
 import com.example.formfit.network.RetrofitClient
@@ -55,5 +56,14 @@ class ChatViewModel(
                 isLoading = false
             }
         }
+    }
+
+    companion object {
+        fun Factory(context: Context): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return ChatViewModel(context) as T
+                }
+            }
     }
 }

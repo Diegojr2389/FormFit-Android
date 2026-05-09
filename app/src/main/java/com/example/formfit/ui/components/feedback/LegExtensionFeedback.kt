@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -14,8 +15,8 @@ var lowest_leg_angle_leg_extension = 360.0
 var is_good_up_leg_extension = false
 
 
-fun provideLegExtensionFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideLegExtensionFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_leg_extension) {
         closer_side_leg_extension = determineCloserSide(pose)
@@ -31,7 +32,7 @@ fun provideLegExtensionFeedback(pose: Pose? = null): String {
         val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
 
         if (rightShoulder == null || rightHip == null || rightKnee == null || rightAnkle == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightShoulder, rightHip, rightKnee, rightAnkle)
@@ -43,20 +44,20 @@ fun provideLegExtensionFeedback(pose: Pose? = null): String {
         val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
 
         if (leftShoulder == null || leftHip == null || leftKnee == null || leftAnkle == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftShoulder, leftHip, leftKnee, leftAnkle)
     }
-    return ""
+    return FormFeedback("")
 }
 
-private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): String {
+private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): FormFeedback {
     if (shoulder.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         ankle.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
@@ -80,14 +81,20 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         }
         if (legAngle >= 180 - ANGLE_TOLERANCE) {
             is_good_up_leg_extension = true
-            return "Perfect. Keep it controlled."
+            return FormFeedback(
+                message = "Perfect. Full extension!",
+                isTop = true
+            )
         }
         // going down
         if (highest_leg_angle_leg_extension - legAngle >= 40 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = true
             highest_leg_angle_leg_extension = 0.0
             if (!is_good_up_leg_extension) {
-                return "On next rep, extend your legs more."
+                return FormFeedback(
+                    message = "On next rep, extend your legs more.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_leg_extension = false
         }
@@ -101,16 +108,22 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         if (legAngle <= 90 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = false
             lowest_leg_angle_leg_extension = 360.0
-            return "Good. Full range of motion."
+            return FormFeedback(
+                message = "Good. Full range of motion.",
+                isBottom = true
+            )
         }
 
         if (legAngle - lowest_leg_angle_leg_extension >= 30 + ANGLE_TOLERANCE) {
             is_going_down_leg_extension = false
             lowest_leg_angle_leg_extension = 360.0
-            return "On next rep, extend your legs higher."
+            return FormFeedback(
+                message = "On next rep, lower your legs more.",
+                isNextRepFeedback = true
+            )
         }
     }
-    return ""
+    return FormFeedback("")
 }
 
 fun resetLegExtensionVariables() {

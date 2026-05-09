@@ -2,6 +2,7 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -14,8 +15,8 @@ var knee_feedback_triggered_plank = false
 var hip_feedback_triggered_plank = false
 var first_feedback_triggered = false
 
-fun providePlankFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun providePlankFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_plank) {
         closer_side_plank = determineCloserSide(pose)
@@ -28,7 +29,7 @@ fun providePlankFeedback(pose: Pose? = null): String {
         val rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)
         val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
 
-        if (rightShoulder == null || rightHip == null || rightKnee == null || rightAnkle == null) return ""
+        if (rightShoulder == null || rightHip == null || rightKnee == null || rightAnkle == null) return FormFeedback("")
 
         return generateFeedback(rightShoulder, rightHip, rightKnee, rightAnkle)
     }
@@ -38,19 +39,19 @@ fun providePlankFeedback(pose: Pose? = null): String {
         val leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)
         val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
 
-        if (leftShoulder == null || leftHip == null || leftKnee == null || leftAnkle == null) return ""
+        if (leftShoulder == null || leftHip == null || leftKnee == null || leftAnkle == null) return FormFeedback("")
 
         return generateFeedback(leftShoulder, leftHip, leftKnee, leftAnkle)
     }
-    return ""
+    return FormFeedback("")
 }
 
-private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): String {
+private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark, ankle: PoseLandmark): FormFeedback {
     if (shoulder.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         ankle.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
@@ -63,30 +64,48 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
 
     if (shHipAnkAngle < 180 - ANGLE_TOLERANCE) {
         hip_feedback_triggered_plank = true
-        return "Hips are too high. Lower them."
+        return FormFeedback(
+            message = "Hips are too high. Lower them.",
+            isBadFeedback = true
+        )
     }
     if (shHipAnkAngle > 180) {
         hip_feedback_triggered_plank = true
-        return "Hips are too low. Lift them."
+        return FormFeedback(
+            message = "Hips are too low. Lift them.",
+            isBadFeedback = true
+        )
     }
     if (hipknAnkAngle < 170 - ANGLE_TOLERANCE) {
         knee_feedback_triggered_plank = true
-        return "Your knees are bending. Straighten them."
+        return FormFeedback(
+            message = "Your knees are bending. Straighten them.",
+            isBadFeedback = true
+        )
     }
     if (shHipAnkAngle >= 180 - ANGLE_TOLERANCE && shHipAnkAngle <= 180 + ANGLE_TOLERANCE && hip_feedback_triggered_plank) {
         hip_feedback_triggered_plank = false
-        return "Perfect. Your hips are now aligned. Hold that position."
+        return FormFeedback(
+            message = "Perfect. Your hips are now aligned.",
+            isGoodFeedback = true
+        )
     }
     if (hipknAnkAngle > 170 - ANGLE_TOLERANCE && knee_feedback_triggered_plank) {
         knee_feedback_triggered_plank = false
-        return "Perfect. Your knees are now aligned. Hold that position."
+        return FormFeedback(
+            message = "Perfect. Your knees are now aligned.",
+            isGoodFeedback = true
+        )
     }
     if (!first_feedback_triggered) {
         first_feedback_triggered = true
-        return "Nice! Hold that position."
+        return FormFeedback(
+            message = "Nice! Hold that position.",
+            isGoodFeedback = true
+        )
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 fun resetPlankVariables() {

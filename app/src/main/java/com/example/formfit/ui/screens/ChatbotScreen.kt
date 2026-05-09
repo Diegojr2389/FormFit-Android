@@ -55,7 +55,12 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun ChatbotScreen(navController: NavHostController, viewModel: ChatViewModel = viewModel()) {
+fun ChatbotScreen(
+    navController: NavHostController,
+    viewModel: ChatViewModel = viewModel(
+        factory = ChatViewModel.Factory(LocalContext.current)
+    )
+) {
     val context = LocalContext.current
     // Tracks the press interaction state of the button (e.g. pressed, released)
     val interactionSource = remember { MutableInteractionSource() }

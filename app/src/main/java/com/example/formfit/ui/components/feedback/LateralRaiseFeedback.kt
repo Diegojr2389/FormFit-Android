@@ -2,6 +2,7 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.Point3F
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.calculateZAngle
@@ -17,8 +18,8 @@ var highest_hipShElAngle = 0.0
 var is_good_up_LR = false
 var is_good_down_LR = false
 
-fun provideLateralRaiseFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideLateralRaiseFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_arm_LR) {
         closer_arm_LR = determineCloserArm(pose)
@@ -34,7 +35,7 @@ fun provideLateralRaiseFeedback(pose: Pose? = null): String {
         val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
 
         if (rightHip == null || rightShoulder == null || rightElbow == null || rightWrist == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightHip, rightShoulder, rightElbow, rightWrist)
@@ -46,21 +47,21 @@ fun provideLateralRaiseFeedback(pose: Pose? = null): String {
         val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
 
         if (leftHip == null || leftShoulder == null || leftElbow == null || leftWrist == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftHip, leftShoulder, leftElbow, leftWrist)
     }
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: PoseLandmark,
-                            wrist: PoseLandmark): String {
+                            wrist: PoseLandmark): FormFeedback {
     if (hip.inFrameLikelihood < 0.95 ||
         shoulder.inFrameLikelihood < 0.95 ||
         elbow.inFrameLikelihood < 0.95 ||
         wrist.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val hipPoint = PointF(hip.position.x, hip.position.y)
@@ -99,14 +100,21 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
 
         if (hipShElAngle >= 90 - ANGLE_TOLERANCE) {
             is_good_up_LR = true
-            return "Perfect. Stay consistent with that arm elevation."
+            return FormFeedback(
+                message = "Perfect arm elevation.",
+                isTop = true
+            )
+
         }
         // going down
         if (highest_hipShElAngle - hipShElAngle >= 20 + ANGLE_TOLERANCE) {
             is_going_down_LR = true
             highest_hipShElAngle = 0.0
             if (!is_good_up_LR) {
-                return "On next rep, raise elbows to shoulder height."
+                return FormFeedback(
+                    message = "On next rep, raise elbows to shoulder height.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_LR = false
         }
@@ -117,19 +125,25 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
         }
         if (hipShWrAngle <= 10 + ANGLE_TOLERANCE) {
             is_good_down_LR = true
-            return "Perfect. Arms returned to a neutral position."
+            return FormFeedback(
+                message = "Nice descent!",
+                isBottom = true
+            )
         }
         // going up
         if (hipShWrAngle - lowest_hipShWrAngle >= 20 + ANGLE_TOLERANCE) {
             is_going_down_LR = false
             lowest_hipShWrAngle = 360.0
             if (!is_good_down_LR) {
-                return "On next rep, lower hands closer to hips"
+                return FormFeedback(
+                    message = "On next rep, lower hands closer to hips",
+                    isNextRepFeedback = true
+                )
             }
             is_good_down_LR = false
         }
     }
-    return ""
+    return FormFeedback("")
 }
 
 fun resetLateralRaiseVariables() {

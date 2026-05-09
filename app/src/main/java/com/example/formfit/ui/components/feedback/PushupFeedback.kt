@@ -2,6 +2,7 @@ package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
 import android.util.Log
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -17,8 +18,8 @@ var lowest_elbow_angle_pushup = 360.0
 var is_good_up_pushup = false
 var is_good_down_pushup = false
 
-fun providePushupFeedback(pose: Pose? = null, rotationDegrees: Int): String {
-    if (pose == null) return ""
+fun providePushupFeedback(pose: Pose? = null, rotationDegrees: Int): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_pushup) {
         closer_side_pushup = determineCloserSide(pose)
@@ -37,7 +38,7 @@ fun providePushupFeedback(pose: Pose? = null, rotationDegrees: Int): String {
 
         if (rightHeel == null || rightHip == null || rightShoulder == null || rightElbow == null ||
             rightWrist == null || rightMouth == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightHeel, rightHip, rightShoulder, rightElbow, rightWrist, rightMouth, rotationDegrees)
@@ -52,24 +53,24 @@ fun providePushupFeedback(pose: Pose? = null, rotationDegrees: Int): String {
 
         if (leftHeel == null || leftHip == null || leftShoulder == null || leftElbow == null ||
             leftWrist == null || leftMouth == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftHeel, leftHip, leftShoulder, leftElbow, leftWrist, leftMouth, rotationDegrees)
     }
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: PoseLandmark,
                              elbow: PoseLandmark, wrist: PoseLandmark, mouth: PoseLandmark,
-                             rotationDegrees: Int): String {
+                             rotationDegrees: Int): FormFeedback {
     if (heel.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         shoulder.inFrameLikelihood < 0.95 ||
         elbow.inFrameLikelihood < 0.95 ||
         wrist.inFrameLikelihood < 0.95 ||
         mouth.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     var heelPoint = PointF(heel.position.x, heel.position.y)
@@ -98,14 +99,20 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
         hipAngle >= 180 - ANGLE_TOLERANCE) {
         is_first_straight_body_pushup = false
         is_body_straight_pushup = true
-        return "Great. Body is in a straight line."
+        return FormFeedback(
+            message = "Great. Good posture!",
+            isGoodFeedback = true
+        )
     }
 
     if (is_body_straight_pushup &&
         hipAngle <= 180 - ANGLE_TOLERANCE &&
         hipPoint.y < shoulderHeelMidPoint.y - Y_TOLERANCE) {
         is_body_straight_pushup = false
-        return "Lower your hips."
+        return FormFeedback(
+            message = "Lower your hips.",
+            isBadFeedback = true
+        )
     }
 
     // ------------------------ FIX THIS -----------------------------
@@ -123,14 +130,20 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
 
         if (elbowAngle >= 170 - ANGLE_TOLERANCE) {
             is_good_up_pushup = true
-            return "Great lockout."
+            return FormFeedback(
+                message = "Great lockout.",
+                isTop = true
+            )
         }
 
         if (highest_elbow_angle_pushup - elbowAngle >= 20 + ANGLE_TOLERANCE) {
             is_going_down_pushup = true
             highest_elbow_angle_pushup = 0.0
             if (!is_good_up_pushup) {
-                return "On next rep, extend elbows more on lockout."
+                return FormFeedback(
+                    message = "On next rep, extend elbows more on lockout.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_pushup = false
         }
@@ -142,19 +155,25 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
 
         if (mouthPoint.y >= wristPoint.y - Y_TOLERANCE*2) {
             is_good_down_pushup = true
-            return "Great. Chest should be touching floor."
+            return FormFeedback(
+                message = "Great. Full depth!",
+                isBottom = true
+            )
         }
 
         if (elbowAngle - lowest_elbow_angle_pushup >= 20 + ANGLE_TOLERANCE ) {
             is_going_down_pushup = false
             lowest_elbow_angle_pushup = 360.0
             if (!is_good_down_pushup) {
-                return "On next rep, touch chest to the ground."
+                return FormFeedback(
+                    message = "On next rep, touch chest to the ground.",
+                    isNextRepFeedback = true
+                )
             }
         }
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 fun resetPushupVariables() {

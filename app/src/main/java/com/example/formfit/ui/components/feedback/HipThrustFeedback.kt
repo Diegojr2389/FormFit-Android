@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -15,8 +16,8 @@ var lowest_hip_angle_HT = 360.0
 var highest_hip_angle_HT = 0.0
 var is_good_foot_placement_HT = false
 
-fun provideHipThrustFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideHipThrustFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_HT) {
         closer_side_HT = determineCloserSide(pose)
@@ -35,7 +36,7 @@ fun provideHipThrustFeedback(pose: Pose? = null): String {
 
         if (rightAnkle == null || rightKnee == null || rightHip == null || rightShoulder == null ||
             rightHeel == null || rightFoot == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightAnkle, rightKnee, rightHip, rightShoulder, rightHeel, rightFoot)
@@ -50,22 +51,22 @@ fun provideHipThrustFeedback(pose: Pose? = null): String {
 
         if (leftAnkle == null || leftKnee == null || leftHip == null || leftShoulder == null ||
             leftHeel == null || leftFoot == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftAnkle, leftKnee, leftHip, leftShoulder, leftHeel, leftFoot)
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseLandmark,
-                             shoulder: PoseLandmark, heel: PoseLandmark, foot: PoseLandmark): String {
+                             shoulder: PoseLandmark, heel: PoseLandmark, foot: PoseLandmark): FormFeedback {
     if (ankle.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         shoulder.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val anklePoint = PointF(ankle.position.x, ankle.position.y)
@@ -87,32 +88,50 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
         if (hipAngle >= 180 - ANGLE_TOLERANCE && !is_good_foot_placement_HT) {
             if (closer_side_HT == "right") {
                 if (kneePoint.x > midFootX + X_TOLERANCE) {
-                    return "Move feet forward."
+                    return FormFeedback(
+                        message = "Move feet forward.",
+                        isBadFeedback = true
+                    )
                 }
 
                 if (kneePoint.x < midFootX - X_TOLERANCE) {
-                    return "Move feet back."
+                    return FormFeedback(
+                        message = "Move feet back.",
+                        isBadFeedback = true
+                    )
                 }
 
                 if (kneePoint.x < midFootX + X_TOLERANCE &&
                     kneePoint.x > midFootX - X_TOLERANCE) {
                     is_good_foot_placement_HT = true
-                    return "Good foot placement"
+                    return FormFeedback(
+                        message = "Good foot placement",
+                        isGoodFeedback = true
+                    )
                 }
             }
             else if (closer_side_HT == "left") {
                 if (kneePoint.x > midFootX + X_TOLERANCE) {
-                    return "Move feet back."
+                    return FormFeedback(
+                        message = "Move feet back.",
+                        isBadFeedback = true
+                    )
                 }
 
                 if (kneePoint.x < midFootX - X_TOLERANCE) {
-                    return "Move feet forward."
+                    return FormFeedback(
+                        message = "Move feet forward.",
+                        isBadFeedback = true
+                    )
                 }
 
                 if (kneePoint.x < midFootX + X_TOLERANCE &&
                     kneePoint.x > midFootX - X_TOLERANCE) {
                     is_good_foot_placement_HT = true
-                    return "Good foot placement"
+                    return FormFeedback(
+                        message = "Good foot placement",
+                        isGoodFeedback = true
+                    )
                 }
             }
         }
@@ -120,14 +139,20 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
         if (kneeAngle >= 90 - ANGLE_TOLERANCE &&
             hipAngle >= 180 - ANGLE_TOLERANCE) {
             is_good_up_HT = true
-            return "Good lockout."
+            return FormFeedback(
+                message = "Good lockout.",
+                isTop = true
+            )
         }
 
         if (highest_hip_angle_HT - hipAngle >= 20 + ANGLE_TOLERANCE) {
             is_going_down_HT = true
             highest_hip_angle_HT = 0.0
             if (!is_good_up_HT) {
-                return "On next rep, lift hips higher."
+                return FormFeedback(
+                    message = "On next rep, lift hips higher.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_HT = false
         }
@@ -135,7 +160,10 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
     else {
         if (!has_given_down_feedback_HT) {
             has_given_down_feedback_HT = true
-            return "Lower hips as much as possible."
+            return FormFeedback(
+                message = "Lower hips as much as possible.",
+                isBottom = true
+            )
         }
 
         if (hipAngle < lowest_hip_angle_HT) {
@@ -146,11 +174,11 @@ private fun generateFeedback(ankle: PoseLandmark, knee: PoseLandmark, hip: PoseL
             is_going_down_HT = false
             lowest_hip_angle_HT = 360.0
             has_given_down_feedback_HT = false
-            return "Reset"
+            return FormFeedback("Reset")
         }
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 fun resetHipThrustVariables() {

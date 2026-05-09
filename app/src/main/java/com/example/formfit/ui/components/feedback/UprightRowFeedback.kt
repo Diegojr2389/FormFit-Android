@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
@@ -13,8 +14,8 @@ var is_good_up_UR = false
 var lowest_Y_elbow_UR = 3000.0f
 var highest_Y_elbow_UR = 0.0f
 
-fun provideUprightRowFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideUprightRowFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_UR) {
         closer_side_UR = determineCloserSide(pose)
@@ -32,7 +33,7 @@ fun provideUprightRowFeedback(pose: Pose? = null): String {
 
         if (rightWrist == null || rightElbow == null || rightShoulder == null || rightHip == null ||
             rightFoot == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightWrist, rightElbow, rightShoulder, rightHip, rightFoot)
@@ -46,23 +47,23 @@ fun provideUprightRowFeedback(pose: Pose? = null): String {
 
         if (leftWrist == null || leftElbow == null || leftShoulder == null || leftHip == null ||
             leftFoot == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftWrist, leftElbow, leftShoulder, leftHip, leftFoot)
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(wrist: PoseLandmark, elbow: PoseLandmark, shoulder: PoseLandmark,
-                             hip: PoseLandmark, foot: PoseLandmark): String {
+                             hip: PoseLandmark, foot: PoseLandmark): FormFeedback {
     if (wrist.inFrameLikelihood < 0.95 ||
         elbow.inFrameLikelihood < 0.95 ||
         shoulder.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         foot.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val wristPoint = PointF(wrist.position.x, wrist.position.y)
@@ -80,22 +81,34 @@ private fun generateFeedback(wrist: PoseLandmark, elbow: PoseLandmark, shoulder:
     if (wristPoint.x >= footPoint.x + X_TOLERANCE) {
         if (is_good_bar_path_UR && closer_side_UR == "right") {
             is_good_bar_path_UR = false
-            return "Bar is too forward"
+            return FormFeedback(
+                message = "Bar is too forward",
+                isBadFeedback = true
+            )
         }
         if (!is_good_bar_path_UR && closer_side_UR == "left") {
             is_good_bar_path_UR = true
-            return "Good bar path."
+            return FormFeedback(
+                message = "Good bar path.",
+                isGoodFeedback = true
+            )
         }
     }
 
     if (wristPoint.x < footPoint.x) {
         if (!is_good_bar_path_UR && closer_side_UR == "right") {
             is_good_bar_path_UR = true
-            return "Good bar path"
+            return FormFeedback(
+                message = "Good bar path",
+                isGoodFeedback = true
+            )
         }
         if (is_good_bar_path_UR && closer_side_UR == "left") {
             is_good_bar_path_UR = false
-            return "Bar is too forward"
+            return FormFeedback(
+                message = "Bar is too forward",
+                isBadFeedback = true
+            )
         }
     }
 
@@ -106,14 +119,20 @@ private fun generateFeedback(wrist: PoseLandmark, elbow: PoseLandmark, shoulder:
 
         if (elbowPoint.y <= shoulderPoint.y - Y_TOLERANCE) {
             is_good_up_UR = true
-            return "Perfect. Elbows reached shoulder height."
+            return FormFeedback(
+                message = "Great pull!",
+                isTop = true
+            )
         }
 
         if (elbowPoint.y - lowest_Y_elbow_UR >= 30 + Y_TOLERANCE) {
             is_going_down_UR = true
             lowest_Y_elbow_UR = 3000.0f
             if (!is_good_up_UR) {
-                return "On next rep, lift elbows up to shoulder height"
+                return FormFeedback(
+                    message = "On next rep, lift elbows up to shoulder height",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_UR = false
         }
@@ -126,11 +145,11 @@ private fun generateFeedback(wrist: PoseLandmark, elbow: PoseLandmark, shoulder:
         if (highest_Y_elbow_UR - elbowPoint.y >= 30 + Y_TOLERANCE) {
             is_going_down_UR = false
             highest_Y_elbow_UR = 0.0f
-            return "Reset"
+            return FormFeedback("Reset")
         }
     }
 
-    return ""
+    return FormFeedback("")
 }
 fun resetUprightRowVariables() {
     has_determined_closer_side_UR = false

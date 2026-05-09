@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -14,8 +15,8 @@ var highest_hip_angle_GM = 0.0
 var is_good_up_GM = false
 var is_good_down_GM = false
 
-fun provideGoodMorningFeedback(pose: Pose? = null) : String {
-    if (pose == null) return ""
+fun provideGoodMorningFeedback(pose: Pose? = null) : FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_GM) {
         closer_side_GM = determineCloserSide(pose)
@@ -33,7 +34,7 @@ fun provideGoodMorningFeedback(pose: Pose? = null) : String {
 
         if (rightShoulder == null || rightHip == null || rightKnee == null ||
             rightFoot == null || rightHeel == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightShoulder, rightHip, rightKnee, rightHeel, rightFoot)
@@ -47,22 +48,23 @@ fun provideGoodMorningFeedback(pose: Pose? = null) : String {
 
         if (leftShoulder == null || leftHip == null || leftKnee == null ||
             leftFoot == null || leftHeel == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftShoulder, leftHip, leftKnee, leftHeel, leftFoot)
+
     }
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark,
-                             heel: PoseLandmark, foot: PoseLandmark): String {
+                             heel: PoseLandmark, foot: PoseLandmark): FormFeedback {
     if (shoulder.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         heel.inFrameLikelihood < 0.95 ||
         foot.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback(message = "")
     }
 
     val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
@@ -87,7 +89,10 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         // good rep at the top (standing neutrally)
         if (hipAngle >= 180 - ANGLE_TOLERANCE) {
             is_good_up_GM = true
-            return "Stand tall and squeeze your glutes."
+            return FormFeedback(
+                message = "Stand tall and squeeze your glutes.",
+                isTop = true
+            )
         }
 
         // going down
@@ -95,7 +100,10 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
             is_going_down_GM = true
             highest_hip_angle_GM = 0.0
             if (!is_good_up_GM) {
-                return "On next rep, stand all the way up."
+                return FormFeedback(
+                    message = "On next rep, stand all the way up.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_GM = false
         }
@@ -108,7 +116,10 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         // good rep at bottom (hip and shoulders are aligned)
         if (hipAngle <= 90 + ANGLE_TOLERANCE) {
             is_good_down_GM = true
-            return "Great hinge! Keep it controlled."
+            return FormFeedback(
+                message = "Great hinge! Keep it controlled.",
+                isBottom = true
+            )
         }
 
         // going up
@@ -116,12 +127,15 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
             is_going_down_GM = false
             lowest_hip_angle_GM = 360.0
             if (!is_good_down_GM) {
-                return "On next rep, lower your torso more"
+                return FormFeedback(
+                    message = "On next rep, lower your torso more",
+                    isNextRepFeedback = true
+                )
             }
             is_good_down_GM = false
         }
     }
-    return ""
+    return FormFeedback("")
 }
 
 fun resetGMVariables() {

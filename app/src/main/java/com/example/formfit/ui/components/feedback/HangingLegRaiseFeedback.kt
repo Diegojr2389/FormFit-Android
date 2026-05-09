@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -14,8 +15,8 @@ var lowest_knee_Y_HLR = 3000.0f
 var highest_knee_Y_HLR = 0.0f
 var are_knees_bent_well = false
 
-fun provideHangingLegRaiseFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideHangingLegRaiseFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
 
     if (!has_determined_closer_side_HLR) {
         closer_side_HLR = determineCloserSide(pose)
@@ -31,7 +32,7 @@ fun provideHangingLegRaiseFeedback(pose: Pose? = null): String {
         val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
 
         if (rightShoulder == null || rightHip == null || rightKnee == null || rightAnkle == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(rightShoulder, rightHip, rightKnee, rightAnkle)
@@ -43,21 +44,21 @@ fun provideHangingLegRaiseFeedback(pose: Pose? = null): String {
         val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
 
         if (leftShoulder == null || leftHip == null || leftKnee == null || leftAnkle == null) {
-            return ""
+            return FormFeedback("")
         }
 
         return generateFeedback(leftShoulder, leftHip, leftKnee, leftAnkle)
     }
-    return ""
+    return FormFeedback("")
 }
 
 private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: PoseLandmark,
-                             ankle: PoseLandmark): String {
+                             ankle: PoseLandmark): FormFeedback {
     if (shoulder.inFrameLikelihood < 0.95 ||
         hip.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         ankle.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val shoulderPoint = PointF(shoulder.position.x, shoulder.position.y)
@@ -69,12 +70,18 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
 
     if (are_knees_bent_well && kneeAngle < 90 + ANGLE_TOLERANCE) {
         are_knees_bent_well = false
-        return "Knees are too bent."
+        return FormFeedback(
+            message = "Knees are too bent.",
+            isBadFeedback = true
+        )
     }
 
     if (!are_knees_bent_well && kneeAngle >= 90 + ANGLE_TOLERANCE) {
         are_knees_bent_well = true
-        return "Perfect. Knees are extended more than 90 degrees"
+        return FormFeedback(
+            message = "Perfect. Knees are extended more than 90 degrees",
+            isGoodFeedback = true
+        )
     }
 
     if (!is_going_down_HLR) {
@@ -84,7 +91,10 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
 
         if (kneePoint.y <= shoulderPoint.y + Y_TOLERANCE) {
             is_good_up_HLR = true
-            return "Perfect. Knees have reached shoulder height."
+            return FormFeedback(
+                message = "Perfect. Knees have reached shoulder height.",
+                isTop = true
+            )
         }
 
         // going down
@@ -92,7 +102,10 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
             is_going_down_HLR = true
             lowest_knee_Y_HLR = 3000.0f
             if (!is_good_up_HLR) {
-                return "On next rep, have knees reach shoulder height"
+                return FormFeedback(
+                    message = "On next rep, have knees reach shoulder height",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_HLR = false
         }
@@ -105,11 +118,11 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         if (highest_knee_Y_HLR - kneePoint.y >= 30 + Y_TOLERANCE) {
             is_going_down_HLR = false
             highest_knee_Y_HLR = 0.0f
-            return "Reset"
+            return FormFeedback("Reset")
         }
     }
 
-    return ""
+    return FormFeedback("")
 }
 fun resetHLRVariables() {
     has_determined_closer_side_HLR = false

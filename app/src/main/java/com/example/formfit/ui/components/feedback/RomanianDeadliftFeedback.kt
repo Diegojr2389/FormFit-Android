@@ -1,6 +1,7 @@
 package com.example.formfit.ui.components.feedback
 
 import android.graphics.PointF
+import com.example.formfit.models.FormFeedback
 import com.example.formfit.utils.calculateAngle
 import com.example.formfit.utils.determineCloserSide
 import com.google.mlkit.vision.pose.Pose
@@ -15,8 +16,8 @@ var lowest_hip_angle_RDL = 360.0
 var is_bar_aligned_with_midfoot_RDL = false
 var is_good_knee_angle_RDL = true
 
-fun provideRomanianDeadliftFeedback(pose: Pose? = null): String {
-    if (pose == null) return ""
+fun provideRomanianDeadliftFeedback(pose: Pose? = null): FormFeedback {
+    if (pose == null) return FormFeedback("")
     if (!has_determined_closer_side_RDL) {
         closer_side_RDL = determineCloserSide(pose)
         if (closer_side_RDL != "error") {
@@ -35,7 +36,7 @@ fun provideRomanianDeadliftFeedback(pose: Pose? = null): String {
 
         if (rightWrist == null || rightShoulder == null || rightHip == null || rightKnee == null ||
             rightHeel == null || rightFoot == null) {
-            return ""
+            return FormFeedback("")
         }
         return generateFeedback(rightWrist, rightShoulder, rightHip, rightKnee, rightHeel, rightFoot)
     }
@@ -49,19 +50,19 @@ fun provideRomanianDeadliftFeedback(pose: Pose? = null): String {
 
         if (leftWrist == null || leftShoulder == null || leftHip == null || leftKnee == null ||
             leftHeel == null || leftFoot == null) {
-            return ""
+            return FormFeedback("")
         }
         return generateFeedback(leftWrist, leftShoulder, leftHip, leftKnee, leftHeel, leftFoot)
     }
-    return ""
+    return FormFeedback("")
 }
 private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: PoseLandmark,
-                             knee: PoseLandmark, heel: PoseLandmark, foot: PoseLandmark): String {
+                             knee: PoseLandmark, heel: PoseLandmark, foot: PoseLandmark): FormFeedback {
     if (wrist.inFrameLikelihood < 0.95 ||
         knee.inFrameLikelihood < 0.95 ||
         heel.inFrameLikelihood < 0.95 ||
         foot.inFrameLikelihood < 0.95) {
-        return ""
+        return FormFeedback("")
     }
 
     val wristPoint = PointF(wrist.position.x, wrist.position.y)
@@ -79,17 +80,26 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
         wristPoint.x <= midFootX + X_TOLERANCE &&
         wristPoint.x >= midFootX - X_TOLERANCE) {
         is_bar_aligned_with_midfoot_RDL = true
-        return "Good bar and midfoot alignment"
+        return FormFeedback(
+            message = "Good bar and midfoot alignment",
+            isGoodFeedback = true
+        )
     }
 
     if (is_bar_aligned_with_midfoot_RDL &&
         wristPoint.x >= midFootX + X_TOLERANCE) {
         is_bar_aligned_with_midfoot_RDL = false
         if (closer_side_RDL == "right") {
-            return "Bar is too forward"
+            return FormFeedback(
+                message = "Bar is too forward",
+                isBadFeedback = true
+            )
         }
         if (closer_side_RDL == "left") {
-            return "Bar is too back"
+            return FormFeedback(
+                message = "Bar is too back",
+                isBadFeedback = true
+            )
         }
     }
 
@@ -97,21 +107,33 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
         wristPoint.x < midFootX - X_TOLERANCE) {
         is_bar_aligned_with_midfoot_RDL = false
         if (closer_side_RDL == "right") {
-            return "Bar is too back"
+            return FormFeedback(
+                message = "Bar is too back",
+                isBadFeedback = true
+            )
         }
         if (closer_side_RDL == "left") {
-            return "Bar is too forward"
+            return FormFeedback(
+                message = "Bar is too forward",
+                isBadFeedback = true
+            )
         }
     }
 
     if (is_good_knee_angle_RDL && kneeAngle <= 150 - ANGLE_TOLERANCE) {
         is_good_knee_angle_RDL = false
-        return "Knees are too bent."
+        return FormFeedback(
+            message = "Knees are too bent.",
+            isBadFeedback = true
+        )
     }
 
     if (!is_good_knee_angle_RDL && kneeAngle >= 150 - ANGLE_TOLERANCE) {
         is_good_knee_angle_RDL = true
-        return "Good knee bend."
+        return FormFeedback(
+            message = "Good knee bend.",
+            isGoodFeedback = true
+        )
     }
 
     if (!is_going_down_RDL) {
@@ -121,14 +143,20 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
 
         if(hipAngle >= 180 - ANGLE_TOLERANCE) {
             is_good_up_RDL = true
-            return "Good lockout."
+            return FormFeedback(
+                message = "Good lockout.",
+                isTop = true
+            )
         }
 
         if (highest_hip_angle_RDL - hipAngle >= 20 + ANGLE_TOLERANCE) {
             is_going_down_RDL = true
             highest_hip_angle_RDL = 0.0
             if (!is_good_up_RDL) {
-                return "On next rep, remember to lockout completely."
+                return FormFeedback(
+                    message = "On next rep, remember to lockout completely.",
+                    isNextRepFeedback = true
+                )
             }
             is_good_up_RDL = false
         }
@@ -141,11 +169,11 @@ private fun generateFeedback(wrist: PoseLandmark, shoulder: PoseLandmark, hip: P
         if (hipAngle - lowest_hip_angle_RDL >= 20 + ANGLE_TOLERANCE) {
             is_going_down_RDL = false
             lowest_hip_angle_RDL = 360.0
-            return "Reset"
+            return FormFeedback("Reset")
         }
     }
 
-    return ""
+    return FormFeedback("")
 }
 
 fun resetRDLVariables() {
