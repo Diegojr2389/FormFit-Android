@@ -95,4 +95,10 @@ dependencies {
 
     // Preferences DataStore (SharedPreferences like APIs)
     implementation("androidx.datastore:datastore-preferences:1.2.1")
+
+    // Coil library - Standard way of displaying images in Compose
+    implementation("io.coil-kt.coil3:coil-compose:3.4.0")
+
+    // Fetching images from the network
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
 }

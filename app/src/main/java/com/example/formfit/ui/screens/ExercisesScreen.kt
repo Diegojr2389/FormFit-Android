@@ -1,10 +1,12 @@
 package com.example.formfit.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,8 +67,11 @@ fun ExercisesScreen(navController : NavController) {
                         }, // updates selectedId
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
-                        )
+                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary
+                                             else MaterialTheme.colorScheme.onBackground
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        border = if (isSelected) null else BorderStroke(1.dp, Color.Gray)
                     )
                     {
                         Text(

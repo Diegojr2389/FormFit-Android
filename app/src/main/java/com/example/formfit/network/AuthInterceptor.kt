@@ -1,5 +1,6 @@
 package com.example.formfit.network
 
+import android.util.Log
 import com.example.formfit.datastore.SessionManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -12,6 +13,8 @@ class AuthInterceptor(
         val token = runBlocking {
             sessionManager.getAccessToken()
         }
+
+        Log.d("AuthInterceptor", "Token: $token")
 
         // Takes the original request and adds the Authorization header to it
         val request = chain.request().newBuilder()

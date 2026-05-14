@@ -2,9 +2,14 @@ package com.example.formfit.ui.components
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -17,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -29,6 +35,7 @@ import com.example.formfit.LoginActivity
 import com.example.formfit.R
 import com.example.formfit.ui.screens.CameraScreen
 import com.example.formfit.ui.screens.ChatbotScreen
+import com.example.formfit.ui.screens.EditProfileScreen
 import com.example.formfit.ui.screens.ExercisesScreen
 import com.example.formfit.ui.screens.HomeScreen
 import com.example.formfit.ui.screens.ProfileScreen
@@ -44,7 +51,7 @@ fun MainTabs(navController: NavHostController) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
-            if (currentRoute != "chatbot") {
+            if (currentRoute != "chatbot" && currentRoute != "edit_profile") {
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.onBackground,
                     tonalElevation = 0.dp
@@ -133,11 +140,16 @@ fun MainTabs(navController: NavHostController) {
         NavHost(
             navController = navController,
             startDestination = "home",
-            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
-            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
-            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
-            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) },
-            modifier = Modifier.padding(innerPadding)
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            modifier = Modifier.padding(
+                PaddingValues(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = if (currentRoute == "chatbot") 0.dp else innerPadding.calculateBottomPadding()
+                )
+            )
         ) {
             composable("home") { HomeScreen() }
             composable("exercises") { ExercisesScreen(navController) }
@@ -166,9 +178,11 @@ fun MainTabs(navController: NavHostController) {
                         context.startActivity(intent)
                         // safely casts the context into an Activity so that we can call finish()
                         (context as? ComponentActivity)?.finish()
-                    }
+                    },
+                    navController
                 )
             }
+            composable("edit_profile") { EditProfileScreen(navController) }
         }
     }
 }

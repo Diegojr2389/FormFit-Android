@@ -39,7 +39,7 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = repository.loginUser(username, password)
                 Log.d("login", "$response")
-                UserDataStore.saveUser(context, response.userId, username)
+                UserDataStore.saveUser(context, response.userId, username, response.email, response.profilePictureUrl)
                 onSuccess(response.accessToken)
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Unknown error"

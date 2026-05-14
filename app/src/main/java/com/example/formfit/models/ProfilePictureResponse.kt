@@ -2,10 +2,7 @@ package com.example.formfit.models
 
 import com.google.gson.annotations.SerializedName
 
-data class UserResponse(
-    val id: Int,
-    val username: String,
-    val email: String,
+data class ProfilePictureResponse(
     @SerializedName("profile_picture_url")
     val profilePictureUrl: String
 )

@@ -39,14 +39,14 @@ class ChatViewModel(
 
             val userDate = inputFormatter.parse(createdAt)
             messages = messages + listOf(
-                ChatMessage(message = message, createdAt = outputFormatter.format(userDate!!), isUser = true)
+                ChatMessage(message = message, createdAt = outputFormatter.format(userDate!!), isUser = true, isNew = true)
             )
 
             try {
                 val response = repository.sendMessage(userId, message, createdAt)
                 val botDate = inputFormatter.parse(response.createdAt)
                 messages = messages + listOf(
-                    ChatMessage(message = response.response, createdAt = outputFormatter.format(botDate!!), isUser = false)
+                    ChatMessage(message = response.response, createdAt = outputFormatter.format(botDate!!), isUser = false, isNew = true)
                 )
 
             } catch(e: Exception) {

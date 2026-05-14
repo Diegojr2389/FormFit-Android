@@ -12,15 +12,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.formfit.datastore.UserDataStore
+import com.example.formfit.models.UserData
 
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
 
-    val user by UserDataStore.getUser(context).collectAsState(initial = Pair(null, null))
+    val user by UserDataStore
+        .getUser(context)
+        .collectAsState(
+            initial = UserData(
+                null,
+                null,
+                null,
+                null))
 
-    val userId = user.first ?: -1
-    val username = user.second ?: ""
+    val userId = user.userId ?: -1
+    val username = user.username ?: ""
 
     Surface(
         modifier = Modifier.fillMaxSize(),

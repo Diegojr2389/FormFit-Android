@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.formfit.R
 import com.example.formfit.datastore.UserDataStore
+import com.example.formfit.models.UserData
 import com.example.formfit.ui.components.ChatBubble
 import com.example.formfit.viewmodel.ChatViewModel
 import java.text.SimpleDateFormat
@@ -71,9 +73,18 @@ fun ChatbotScreen(
 
     val outputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
 
-    val user by UserDataStore.getUser(context).collectAsState(initial = Pair(null, null))
+    val user by UserDataStore
+        .getUser(context)
+        .collectAsState(
+            initial = UserData(
+                null,
+                null,
+                null,
+                null
+            )
+        )
 
-    val userId = user.first
+    val userId = user.userId
 
     // only enable send when userId is loaded
     val isSendEnabled = userId != null && message.isNotBlank()
@@ -114,6 +125,7 @@ fun ChatbotScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .navigationBarsPadding()
                 .imePadding()
         ) {
             Column(
@@ -128,7 +140,7 @@ fun ChatbotScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { navController.navigate("home")},
+                        onClick = { navController.popBackStack()},
                         interactionSource = interactionSource,
                         modifier = Modifier
                             .size(40.dp)

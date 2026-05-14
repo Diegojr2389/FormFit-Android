@@ -1,5 +1,6 @@
 package com.example.formfit.network
 
+import android.util.Log
 import com.example.formfit.datastore.SessionManager
 import com.example.formfit.models.RefreshRequest
 import kotlinx.coroutines.runBlocking
@@ -13,11 +14,14 @@ class TokenAuthenticator(
     private val apiService: ApiService
 ) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
+        Log.d("TokenAuthenticator", "401 received, attempting refresh")
         // runBlocking is used because OkHttp runs on a background thread and doesn't support coroutines
         // natively, so it blocks the thread until the value is retrieved
         val refreshToken = runBlocking {
             sessionManager.getRefreshToken()
         } ?: return null
+
+        Log.d("TokenAuthenticator", "Refresh token: $refreshToken")
 
         return try {
 
@@ -25,6 +29,8 @@ class TokenAuthenticator(
             val tokenResponse = runBlocking {
                 apiService.refreshToken(RefreshRequest(refreshToken))
             }
+
+            Log.d("TokenAuthenticator", "Refresh response: ${tokenResponse.code()}")
 
             // save new tokens
             runBlocking {
@@ -45,10 +51,10 @@ class TokenAuthenticator(
         // If the refresh fails (refresh token expired), clear all stored tokens and return null — OkHttp
         // passes the 401 back to the caller, then sends user to the login screen
         } catch (e: Exception) {
+            Log.d("TokenAuthenticator", "Refresh failed: ${e.message}")
             runBlocking {
                 sessionManager.clearSession()
             }
-
             return null
         }
     }
