@@ -77,22 +77,6 @@ private fun generateFeedback(hip: PoseLandmark, shoulder: PoseLandmark, elbow: P
     val hipShElAngle = calculateAngle(hipPoint, shoulderPoint, elbowPoint)
     val hipShWrAngle = calculateAngle(hipPoint, shoulderPoint, wristPoint)
 
-    /////////// EXPERIMENT LATER/////////
-
-//    Log.d("Feedback", "ELBOW: $frontElbowAngle")
-//    if (frontElbowAngle >= 160 + ANGLE_TOLERANCE) {
-//        Log.d("Feedback", "TOO STRAIGHT")
-//        return "Arms are too straight, bend elbows more"
-//    }
-//    if (frontElbowAngle <= 160 - ANGLE_TOLERANCE) {
-//        Log.d("Feedback", "TOO BENT")
-//        return "Arms are too bent, bend elbows less"
-//    }
-//    if (frontElbowAngle >= 160 - ANGLE_TOLERANCE && frontElbowAngle <= 160 + ANGLE_TOLERANCE) {
-//        Log.d("Feedback", "GOOD FLEXION")
-//        return "Good job. Good elbow flexion."
-//    }
-
     if (!is_going_down_LR) {
         if (hipShElAngle > highest_hipShElAngle) {
             highest_hipShElAngle = hipShElAngle

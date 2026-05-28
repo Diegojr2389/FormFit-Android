@@ -117,7 +117,7 @@ private fun generateFeedback(shoulder: PoseLandmark, hip: PoseLandmark, knee: Po
         if (hipAngle <= 90 + ANGLE_TOLERANCE) {
             is_good_down_GM = true
             return FormFeedback(
-                message = "Great hinge! Keep it controlled.",
+                message = "Great hinge!",
                 isBottom = true
             )
         }

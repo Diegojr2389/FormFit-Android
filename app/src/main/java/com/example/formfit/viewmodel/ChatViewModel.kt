@@ -20,6 +20,8 @@ class ChatViewModel(
 ) : ViewModel() {
     val outputFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
+    val chatScreenOutputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
+
     val inputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
     private val repository = ChatRepository(RetrofitClient.create(context))
 

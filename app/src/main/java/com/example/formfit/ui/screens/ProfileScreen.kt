@@ -36,6 +36,7 @@ import coil3.compose.AsyncImage
 import com.example.formfit.R
 import com.example.formfit.datastore.UserDataStore
 import com.example.formfit.models.UserData
+import com.example.formfit.ui.theme.OswaldFontFamily
 import com.example.formfit.viewmodel.ProfileViewModel
 
 @Composable
@@ -89,7 +90,8 @@ fun ProfileScreen(
                 .fillMaxWidth(),
             color = Color.White,
             fontSize = 18.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = OswaldFontFamily
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -116,12 +118,14 @@ fun ProfileScreen(
                     text = username ?: "",
                     color = Color.White,
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = OswaldFontFamily
                 )
                 Text(
                     text = email ?: "",
                     color = Color.Gray,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
         }
@@ -136,7 +140,8 @@ fun ProfileScreen(
             Text(
                 text = "Flagged Issues",
                 color = Color.Gray,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                fontFamily = OswaldFontFamily
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -153,7 +158,8 @@ fun ProfileScreen(
 
                     Text(
                         text = "None",
-                        color = Color.White
+                        color = Color.White,
+                        fontFamily = OswaldFontFamily
                     )
                 }
             }
@@ -170,7 +176,8 @@ fun ProfileScreen(
 
                         Text(
                             text = issue.description,
-                            color = Color.White
+                            color = Color.White,
+                            fontFamily = OswaldFontFamily
                         )
 
                         Spacer(modifier = Modifier.height(5.dp))
@@ -188,7 +195,8 @@ fun ProfileScreen(
             Text(
                 text = "My Account",
                 color = Color.Gray,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                fontFamily = OswaldFontFamily
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -199,7 +207,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .clickable {
                         navController.navigate("edit_profile")
-                    }
+                    },
+                fontFamily = OswaldFontFamily
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -210,7 +219,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .clickable {
                         viewModel.logout()
-                    }
+                    },
+                fontFamily = OswaldFontFamily
             )
         }
     }

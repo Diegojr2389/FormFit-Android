@@ -1,5 +1,13 @@
 package com.example.formfit.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,7 +20,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -41,8 +48,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,10 +61,9 @@ import com.example.formfit.R
 import com.example.formfit.datastore.UserDataStore
 import com.example.formfit.models.UserData
 import com.example.formfit.ui.components.ChatBubble
+import com.example.formfit.ui.theme.OswaldFontFamily
 import com.example.formfit.viewmodel.ChatViewModel
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ChatbotScreen(
@@ -70,8 +79,6 @@ fun ChatbotScreen(
     val isPressed by interactionSource.collectIsPressedAsState()
     // Message typed in by user
     var message by remember { mutableStateOf("") }
-
-    val outputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
 
     val user by UserDataStore
         .getUser(context)
@@ -93,26 +100,51 @@ fun ChatbotScreen(
 
     val listState = rememberLazyListState()
 
+    val arcAngle by animateFloatAsState(
+        targetValue = if (message.isNotBlank()) 360f else 0f,
+        animationSpec = tween(durationMillis = 500)
+    )
+
     // show the send button only when user has started typing a message
-    val trailingIcon: @Composable (() -> Unit)? = if (message.isNotBlank()) {
-        {
-            IconButton(
-                onClick = {
-                    userId?.let {
-                        viewModel.send(userId, message, outputFormatter.format(Date()))
-                        message = ""
-                    }
-                },
-                enabled = isSendEnabled
+    val trailingIcon: @Composable (() -> Unit) = {
+        AnimatedVisibility(
+            visible = message.isNotBlank(),
+            enter = fadeIn() + scaleIn(),
+            exit = fadeOut(animationSpec = tween(durationMillis = 300, delayMillis = 500)) +
+                   scaleOut(animationSpec = tween(durationMillis = 300, delayMillis = 500))
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_send_filled),
-                    contentDescription = "send",
-                    tint = Color.White
-                )
+                Canvas(modifier = Modifier.size(40.dp)) {
+                    drawArc(
+                        color = Color.White,
+                        startAngle = -90f,
+                        sweepAngle = arcAngle,
+                        useCenter = false,
+                        style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        userId?.let {
+                            viewModel.send(userId, message, viewModel.chatScreenOutputFormatter.format(Date()))
+                            message = ""
+                        }
+                    },
+                    enabled = isSendEnabled
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_send_filled),
+                        contentDescription = "send",
+                        tint = Color.White
+                    )
+                }
             }
         }
-    } else null
+
+    }
 
     Surface(
         modifier = Modifier
@@ -170,13 +202,28 @@ fun ChatbotScreen(
                     Column {
                         Text(
                             text = "Forma",
-                            color = Color.White
+                            color = Color.White,
+                            fontFamily = OswaldFontFamily
                         )
-                        Text(
-                            text = "Online",
-                            fontSize = 12.sp,
-                            color = Color(0xFF00C853)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_circle),
+                                contentDescription = "Status Indicator",
+                                tint = Color(0xFF00C853),
+                                modifier = Modifier.size(12.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = "Online",
+                                fontSize = 12.sp,
+                                color = Color(0xFF00C853),
+                                fontFamily = OswaldFontFamily
+                            )
+                        }
                     }
                 }
 
@@ -194,7 +241,24 @@ fun ChatbotScreen(
                 contentPadding = PaddingValues(10.dp)
             ) {
                 items(messages.reversed()) { message ->
-                    ChatBubble(message)
+                    Row(
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        if (!message.isUser) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_forma),
+                                contentDescription = "Forma",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                            )
+
+                            Spacer (modifier = Modifier.width(8.dp))
+                        }
+
+                        ChatBubble(message)
+                    }
+
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }
@@ -202,7 +266,7 @@ fun ChatbotScreen(
             TextField(
                 value = message,
                 onValueChange = { message = it},
-                label = { Text("Message...") },
+                label = { Text(text = "Message...", fontFamily = OswaldFontFamily) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp),
@@ -213,7 +277,8 @@ fun ChatbotScreen(
                     focusedContainerColor = Color(0xFF1E1E1E),
                     unfocusedContainerColor = Color(0xFF1E1E1E)
                 ),
-                trailingIcon = trailingIcon
+                trailingIcon = trailingIcon,
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 16.sp)
             )
 
         }

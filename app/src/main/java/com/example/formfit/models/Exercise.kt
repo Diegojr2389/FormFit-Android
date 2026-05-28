@@ -6,5 +6,7 @@ data class Exercise(
     val name: String,
     val primaryMuscle: List<String>,
     val secondaryMuscle: List<String>,
-    val description: String
+    val description: String,
+    val assetName: String,
+    val assetResId: Int? = null
 )

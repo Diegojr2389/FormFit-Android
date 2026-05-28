@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.formfit.models.ChatMessage
+import com.example.formfit.ui.theme.OswaldFontFamily
 import kotlinx.coroutines.delay
 
 @Composable
@@ -60,12 +61,14 @@ fun ChatBubble(message: ChatMessage) {
             Column {
                 Text(
                     text = displayedText,
-                    color = Color.White
+                    color = Color.White,
+                    fontFamily = OswaldFontFamily
                 )
                 Text(
                     text = message.createdAt,
                     color = Color.Gray,
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
         }

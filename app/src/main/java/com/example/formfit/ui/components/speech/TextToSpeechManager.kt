@@ -39,7 +39,6 @@ class TextToSpeechManager(private val context: Context) {
             lastMessage = ""
         }
         else if (text.isNotBlank() && text != lastMessage) {
-            Log.d("PoseDebug", text)
             if (feedback.isNextRepFeedback) {
                 // QUEUE_FLUSH = stop speaking and immediately start incoming text
                 tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)

@@ -8,11 +8,12 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 
 var lowest_knee_angle_squat = 360.0
+var highest_knee_angle_squat = 0.0
 var closer_leg_squat = "";
 var has_determined_closer_leg_squat = false
 var medium_squat_reached = false
 var deep_squat_reached = false
-var is_going_down_squat = false
+var is_going_down_squat = true
 
 
 
@@ -64,7 +65,7 @@ private fun generateFeedback(hip: PoseLandmark, knee: PoseLandmark, ankle: PoseL
 
     if (is_going_down_squat) {
         // to calculate lowest angle
-        if (lowest_knee_angle_squat > kneeAngle) {
+        if (kneeAngle < lowest_knee_angle_squat) {
             lowest_knee_angle_squat = kneeAngle
         }
 
@@ -83,18 +84,32 @@ private fun generateFeedback(hip: PoseLandmark, knee: PoseLandmark, ankle: PoseL
             else if (lowest_knee_angle_squat <= 45) {
                 deep_squat_reached = true
                 return FormFeedback(
-                    message = "Excellent! You have hit a deep squat!",
+                    message = "Excellent! You hit a deep squat!",
                     isGoodFeedback = true
                 )
             }
         }
+
+        if (kneeAngle - lowest_knee_angle_squat >= 20 + ANGLE_TOLERANCE) {
+            is_going_down_squat = false
+            lowest_knee_angle_squat = 360.0
+            deep_squat_reached = false
+            if(!medium_squat_reached) {
+                return FormFeedback(
+                    message = "On next rep, squat lower."
+                )
+            }
+            medium_squat_reached = false
+        }
     }
     else {
+        if (kneeAngle > highest_knee_angle_squat) {
+            highest_knee_angle_squat = kneeAngle
+        }
         // to reset lowest angle (going up)
-        if ((kneeAngle - lowest_knee_angle_squat) > 45 + ANGLE_TOLERANCE) {
-            lowest_knee_angle_squat = 360.0
-            medium_squat_reached = false
-            deep_squat_reached = false
+        if ((highest_knee_angle_squat - kneeAngle) >= 20 + ANGLE_TOLERANCE) {
+            is_going_down_squat = true
+            highest_knee_angle_squat = 0.0
             return FormFeedback("Reset")
         }
     }
@@ -108,4 +123,5 @@ fun resetSquatVariables() {
     has_determined_closer_leg_squat = false
     medium_squat_reached = false
     deep_squat_reached = false
+    is_going_down_squat = true
 }

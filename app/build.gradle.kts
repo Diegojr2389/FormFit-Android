@@ -101,4 +101,13 @@ dependencies {
 
     // Fetching images from the network
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
+
+    // Google Fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.11.0")
+
+    // video player engine that handles loading, buffering, and playing the video file
+    implementation("androidx.media3:media3-exoplayer:1.10.1")
+
+    // provides the PlayerView composable/view that displays the video on screen with playback controls
+    implementation("androidx.media3:media3-ui:1.10.1")
 }

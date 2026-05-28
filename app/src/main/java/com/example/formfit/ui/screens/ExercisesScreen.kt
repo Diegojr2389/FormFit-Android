@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.formfit.data.local.EXERCISES
 import com.example.formfit.ui.components.ExerciseCard
+import com.example.formfit.ui.theme.OswaldFontFamily
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
@@ -50,7 +51,13 @@ fun ExercisesScreen(navController : NavController) {
         color = MaterialTheme.colorScheme.onBackground
     ) {
         Column {
-            Text("Exercises", color = Color.White, fontSize = 30.sp, modifier = Modifier.padding(10.dp))
+            Text(
+                text = "Exercises",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontFamily = OswaldFontFamily,
+                modifier = Modifier.padding(10.dp)
+            )
 
             // FlowRow: Arranges UI elements horizontally and wraps them to next line automatically
             FlowRow(
@@ -75,9 +82,10 @@ fun ExercisesScreen(navController : NavController) {
                     )
                     {
                         Text(
-                            exercise.name,
+                            text = exercise.name,
                             fontSize = 13.sp,
-                            color = if (isSelected) Color.White else Color.LightGray
+                            color = if (isSelected) Color.White else Color.LightGray,
+                            fontFamily = OswaldFontFamily
                         )
                     }
                 }

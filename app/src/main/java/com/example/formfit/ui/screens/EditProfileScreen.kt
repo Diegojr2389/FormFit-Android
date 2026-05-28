@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -68,6 +69,7 @@ import coil3.compose.AsyncImage
 import com.example.formfit.R
 import com.example.formfit.datastore.UserDataStore
 import com.example.formfit.models.UserData
+import com.example.formfit.ui.theme.OswaldFontFamily
 import com.example.formfit.viewmodel.EditProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -189,6 +191,7 @@ fun EditProfileScreen(
                     .align(Alignment.Center),
                 color = Color.White,
                 fontSize = 18.sp,
+                fontFamily = OswaldFontFamily
             )
         }
 
@@ -253,7 +256,7 @@ fun EditProfileScreen(
                     // Moves the focus to the next field below in the layout
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                label = { Text("Username") },
+                label = { Text(text = "Username", fontFamily = OswaldFontFamily) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -262,14 +265,16 @@ fun EditProfileScreen(
                     focusedLabelColor = if (!usernameError.isNullOrBlank()) Color.Red else MaterialTheme.colorScheme.primary,
                     unfocusedLabelColor = if (!usernameError.isNullOrBlank()) Color.Red else Color.White,
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 18.sp)
             )
 
             if (!usernameError.isNullOrBlank()) {
                 Text(
                     text = usernameError!!,
                     color = Color.Red,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
 
@@ -287,7 +292,7 @@ fun EditProfileScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                label = { Text("Email") },
+                label = { Text(text = "Email", fontFamily = OswaldFontFamily) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -296,14 +301,16 @@ fun EditProfileScreen(
                     focusedLabelColor = if (!emailError.isNullOrBlank()) Color.Red else MaterialTheme.colorScheme.primary,
                     unfocusedLabelColor = if (!emailError.isNullOrBlank()) Color.Red else Color.White,
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 18.sp)
             )
 
             if (!emailError.isNullOrBlank()) {
                 Text(
                     text = emailError!!,
                     color = Color.Red,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
 
@@ -316,7 +323,7 @@ fun EditProfileScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                label = { Text("Current password") },
+                label = { Text(text = "Current password", fontFamily = OswaldFontFamily) },
                 visualTransformation = if (currentPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { currentPasswordVisible = !currentPasswordVisible }) {
@@ -330,7 +337,8 @@ fun EditProfileScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 18.sp)
             )
 
 
@@ -348,7 +356,7 @@ fun EditProfileScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                label = { Text("New password") },
+                label = { Text(text = "New password", fontFamily = OswaldFontFamily) },
                 visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
@@ -384,14 +392,16 @@ fun EditProfileScreen(
                             }
                         }
                     },
-                enabled = !currentPassword.isEmpty()
+                enabled = !currentPassword.isEmpty(),
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 18.sp)
             )
 
             if (!newPasswordError.isNullOrBlank()) {
                 Text(
                     text = newPasswordError!!,
                     color = Color.Red,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
 
@@ -406,7 +416,7 @@ fun EditProfileScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 // Dismisses keyboard and removes focus from all fields when "Done" is pressed
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                label = { Text("Re-type new password") },
+                label = { Text(text = "Re-type new password", fontFamily = OswaldFontFamily) },
                 visualTransformation = if (retypeNewPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { retypeNewPasswordVisible = !retypeNewPasswordVisible }) {
@@ -426,14 +436,16 @@ fun EditProfileScreen(
                     unfocusedLabelColor = if (!retypeNewPasswordError.isNullOrBlank()) Color.Red else Color.White,
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !currentPassword.isEmpty()
+                enabled = !currentPassword.isEmpty(),
+                textStyle = TextStyle(fontFamily = OswaldFontFamily, fontSize = 18.sp)
             )
 
             if (!retypeNewPasswordError.isNullOrBlank()) {
                 Text(
                     text = retypeNewPasswordError!!,
                     color = Color.Red,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontFamily = OswaldFontFamily
                 )
             }
         }
@@ -445,7 +457,8 @@ fun EditProfileScreen(
                 text = viewModel.updateProfileErrorMessage!!,
                 color = Color.Red,
                 textAlign = TextAlign.Center,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                fontFamily = OswaldFontFamily
             )
         }
         else if (!viewModel.updateProfileSuccessMessage.isNullOrBlank()) {
@@ -456,7 +469,8 @@ fun EditProfileScreen(
             Text(
                 text = viewModel.updateProfileSuccessMessage!!,
                 color = Color.Green,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                fontFamily = OswaldFontFamily
             )
         }
 
@@ -477,7 +491,8 @@ fun EditProfileScreen(
         ) {
             Text(
                 text = "Save Changes",
-                color = Color.White
+                color = Color.White,
+                fontFamily = OswaldFontFamily
             )
         }
     }

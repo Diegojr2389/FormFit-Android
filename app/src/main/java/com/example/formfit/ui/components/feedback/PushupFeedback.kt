@@ -79,7 +79,6 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
     var elbowPoint = PointF(elbow.position.x, elbow.position.y)
     var wristPoint = PointF(wrist.position.x, wrist.position.y)
     var mouthPoint = PointF(mouth.position.x, mouth.position.y)
-    var shoulderHeelMidPoint = PointF(((shoulderPoint.x + heelPoint.x) / 2), ((shoulderPoint.y + heelPoint.y) / 2))
 
     // flip coordinates if phone is in landscape mode
     if (rotationDegrees == 90 || rotationDegrees == 270) {
@@ -89,9 +88,11 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
         elbowPoint = PointF(elbow.position.y, elbow.position.x)
         wristPoint = PointF(wrist.position.y, wrist.position.x)
         mouthPoint = PointF(mouth.position.y, mouth.position.x)
-        shoulderHeelMidPoint = PointF(((shoulderPoint.y + heelPoint.y) / 2), ((shoulderPoint.x + heelPoint.x) / 2))
     }
 
+    val shoulderHeelMidPoint = PointF(
+        (shoulderPoint.x + heelPoint.x) / 2,
+        (shoulderPoint.y + heelPoint.y) / 2)
     val hipAngle = calculateAngle(heelPoint, hipPoint, shoulderPoint)
     val elbowAngle = calculateAngle(shoulderPoint, elbowPoint, wristPoint)
 
@@ -109,19 +110,23 @@ private fun generateFeedback(heel: PoseLandmark, hip: PoseLandmark, shoulder: Po
         hipAngle <= 180 - ANGLE_TOLERANCE &&
         hipPoint.y < shoulderHeelMidPoint.y - Y_TOLERANCE) {
         is_body_straight_pushup = false
+        Log.d("PoseDebug", "Mid Point: ${shoulderHeelMidPoint.y}")
+        Log.d("PoseDebug", "Hip Point: ${hipPoint.y}")
         return FormFeedback(
             message = "Lower your hips.",
             isBadFeedback = true
         )
     }
 
-    // ------------------------ FIX THIS -----------------------------
-//    if (is_body_straight_pushup &&
-//        hipAngle <= 180 - ANGLE_TOLERANCE &&
-//        hipPoint.y > shoulderHeelMidPoint.y + Y_TOLERANCE) {
-//        is_body_straight_pushup = false
-//        return "Lift your hips."
-//    }
+    if (is_body_straight_pushup &&
+        hipAngle <= 180 - ANGLE_TOLERANCE &&
+        hipPoint.y > shoulderHeelMidPoint.y + Y_TOLERANCE) {
+        is_body_straight_pushup = false
+        return FormFeedback(
+            message = "Lift your hips.",
+            isBadFeedback = true
+        )
+    }
 
     if (!is_going_down_pushup) {
         if (elbowAngle > highest_elbow_angle_pushup) {
